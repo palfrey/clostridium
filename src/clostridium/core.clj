@@ -162,6 +162,7 @@
           (let [{:keys [b item]} (removeFromStack b)]
             (do
               (print (str item " "))
+              (flush)
               b
             )
           )
@@ -170,6 +171,7 @@
           (let [{:keys [b item]} (removeFromStack b)]
             (do
               (print (str (char item)))
+              (flush)
               b
             )
           )
