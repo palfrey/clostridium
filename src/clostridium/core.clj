@@ -317,14 +317,14 @@
 
 (defn doInst [b]
   (let [
-        inst (current b)
+        inst (char (current b))
         insts (:inst b)
         f (get insts inst)
        ]
     (updatePC
       (if 
         (and (not= inst \") (:stringMode b))
-        (addToStack b (current b))
+        (addToStack b (int (current b)))
         (if (nil? f)
           (throw (Exception. (str "No such command '" inst "'")))
           (f b)
