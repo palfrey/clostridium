@@ -131,7 +131,7 @@
     (assoc b :pc
       (if (not= (current (:grid b) (reverse initial)) \ )
         initial ; easy case, can just return the basic value
-        (if (not= (apply + (map #(Math/abs %) (:dir b))))
+        (if (not= (apply + (map #(Math/abs %) (:dir b))) 1)
           (throw (Exception. "Don't support directions with a magnitude other than 1"))
           (reverse (jumpPC (:grid b) (reverse initial) (reverse (:dir b))))
         )
