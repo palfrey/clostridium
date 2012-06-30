@@ -149,6 +149,9 @@
    )
 )
 
+(defn rotateCCW [b] (assoc b :dir (let [[x y] (:dir b)] [(* y -1) x])))
+(defn rotateCW [b] (assoc b :dir (let [[x y] (:dir b)] [y (* x -1)])))
+
 (def initialInstructions
   (merge
     numberInsts 
@@ -241,7 +244,46 @@
       \c (fn [b] (addToStack b 12)) 
       \d (fn [b] (addToStack b 13)) 
       \e (fn [b] (addToStack b 14)) 
-      \f (fn [b] (addToStack b 15)) 
+      \f (fn [b] (addToStack b 15))
+      \[ rotateCW
+      \] rotateCCW
+      \' (fn [nb] (let [b (updatePC nb)]
+                    (updatePC (addToStack b (current b)))
+                  ))
+      \; (fn [nb]
+           (loop [b (updatePC nb)]
+             (if (= \; (current b))
+               b
+               (recur (updatePC b))
+              )
+            )
+          )
+      \w (fn [nb] 
+            (let [
+                  {:keys [b items]} (removeManyFromStack nb 2)
+                  [one two] items
+                  ]
+              (if (> one two)
+                (rotateCCW b)
+                (if (< one two)
+                  (rotateCW b)
+                  b
+                )
+              )
+            )
+          )
+      \x (fn [nb] 
+            (let [
+                  {:keys [b items]} (removeManyFromStack nb 2)
+                  [x y] items
+                  ]
+              (do
+                (println "Absolute delta " x " " y " " (:pc b) (:dir b))
+                (assoc b :dir [x y])
+              )
+            )
+          )
+      \t reflect ; FIXME: change this to implement concurrency
     }
   )
 )
