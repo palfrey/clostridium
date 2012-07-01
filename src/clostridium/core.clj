@@ -89,7 +89,7 @@
    )
 )
 
-(defn jumpPC 
+(defn jumpPC
   [grid pc dir]
   (let [
         d (first dir)
@@ -112,13 +112,12 @@
     (case d
       -1 (j > >=)
       1 (j < <=)
-      0 (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
+      0 (conj (jumpPCSkipSpaces (get grid c) (rest pc) (rest dir)) c)
     )
   )
 )
 
-(defn updatePC 
-  ([b] (updatePC b false))
+(defn updatePCSkipSpace 
   ([b noJump]
     (let [initial 
           (map 
@@ -139,6 +138,39 @@
           (if (not= (apply + (map #(Math/abs %) (:dir b))) 1)
             (throw (Exception. "Don't support directions with a magnitude other than 1"))
             (reverse (jumpPC (:grid b) (reverse initial) (reverse (:dir b))))
+          )
+        )
+      )
+    )
+  )
+)
+
+(defn updatePC 
+  ([b] (updatePC b false))
+  ([b noJump]
+    (loop [
+           nb (updatePCSkipSpace b noJump)
+           colonMode false
+          ]
+      (if (or noJump (:stringMode nb))
+        nb
+        (if (= \; (current nb))
+          (do
+            ;(println ";" colonMode (:pc nb))
+            (recur (updatePCSkipSpace nb noJump) (not colonMode))
+          )
+          (if colonMode
+            (do
+              ;(println ";" colonMode (:pc nb) (current nb) noJump (:stringMode nb))
+              (if (> (first (:pc nb)) 160)
+                (throw (Exception. "FIXME"))
+                (recur (updatePCSkipSpace nb noJump) colonMode)
+              )
+            )
+            (do
+              ;(println "found end")
+              nb
+            )
           )
         )
       )
@@ -274,14 +306,6 @@
       \' (fn [nb] (let [b (updatePC nb false)]
                     (updatePC (addToStack b (current b)))
                   ))
-      \; (fn [nb]
-           (loop [b (updatePC nb)]
-             (if (= \; (current b))
-               b
-               (recur (updatePC b))
-              )
-            )
-          )
       \w (fn [nb] 
             (let [
                   {:keys [b items]} (removeManyFromStack nb 2)
