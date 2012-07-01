@@ -94,21 +94,24 @@
   (let [
         d (first dir)
         c (first pc)
+        j (fn [order choose]
+            (conj (rest pc) 
+             (let [
+                items (sort order (filter (partial choose c) (keys grid)))
+                coord (some #(if (= \  (current (get grid %) (rest pc))) false %) items)
+                   ]
+                (if (nil? coord)
+                  (first (sort order (keys grid)))
+                  ;(throw (Exception. (str "FIXME: " d " " c " " items " " (rest pc) " " (seq (map #(current (get grid %) (rest pc)) items)) (sort order (keys grid)))))
+                  coord
+                )
+             )
+            )
+          )
        ]
     (case d
-      -1 
-        (conj (rest pc) 
-         (let [
-            items (sort > (filter (partial >= c) (keys grid)))
-            coord (some #(if (= \  current (get grid %) (rest pc)) false %) items)
-               ]
-             (do
-               ;(prn "coord" coord pc (current (get grid coord) (rest pc)))
-               coord
-             )
-         )
-        )
-      1 pc
+      -1 (j > >=)
+      1 (j < <=)
       0 (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
     )
   )
