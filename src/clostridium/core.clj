@@ -350,13 +350,6 @@
   }
 )
 
-
-;(defn gridLimit
-; ([b] (gridLimit (:grid b) [])
-;  ([grid values]
-;   (if (seq? (first grid))
-;     (gridLimit (
-
 (defn doInst [b]
   (let [
         inst (char (current b))
@@ -375,12 +368,10 @@
 )
 
 (defn runBefunge [fname]
-  (let [b (makeInitial fname)]
-    (loop [b (makeInitial fname)]
-      (if (:running b)
-        (recur (doAndPrint b))
-        nil
-      )
+  (loop [b (makeInitial fname)]
+    (if (:running b)
+      (recur (doAndPrint b))
+      nil
     )
   )
 )
