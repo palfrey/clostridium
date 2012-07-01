@@ -117,26 +117,29 @@
   )
 )
 
-(defn updatePC [b]
-  (let [initial 
-        (map 
-          #(let [val (+ %1 %2)]
-             (if (< val 0)
-               (+ val maxValue)
-               (if (>= val maxValue)
-                 (- val maxValue)
-                 val
+(defn updatePC 
+  ([b] (updatePC b false))
+  ([b noJump]
+    (let [initial 
+          (map 
+            #(let [val (+ %1 %2)]
+               (if (< val 0)
+                 (+ val maxValue)
+                 (if (>= val maxValue)
+                   (- val maxValue)
+                   val
+                  )
                 )
               )
-            )
-           (:pc b) (:dir b)
-        )]
-    (assoc b :pc
-      (if (not= (current (:grid b) (reverse initial)) \ )
-        initial ; easy case, can just return the basic value
-        (if (not= (apply + (map #(Math/abs %) (:dir b))) 1)
-          (throw (Exception. "Don't support directions with a magnitude other than 1"))
-          (reverse (jumpPC (:grid b) (reverse initial) (reverse (:dir b))))
+             (:pc b) (:dir b)
+          )]
+      (assoc b :pc
+        (if (or noJump (:stringMode b) (not= (current (:grid b) (reverse initial)) \ ))
+          initial ; easy case, can just return the basic value
+          (if (not= (apply + (map #(Math/abs %) (:dir b))) 1)
+            (throw (Exception. "Don't support directions with a magnitude other than 1"))
+            (reverse (jumpPC (:grid b) (reverse initial) (reverse (:dir b))))
+          )
         )
       )
     )
@@ -154,6 +157,22 @@
 
 (defn rotateCCW [b] (assoc b :dir (let [[x y] (:dir b)] [(* y -1) x])))
 (defn rotateCW [b] (assoc b :dir (let [[x y] (:dir b)] [y (* x -1)])))
+
+(defn runInst [b inst]
+  (let [
+        insts (:inst b)
+        f (get insts inst)
+       ]
+    (if 
+      (and (not= inst \") (:stringMode b))
+      (addToStack b (int inst))
+      (if (nil? f)
+        (throw (Exception. (str "No such command '" inst "'" (seq (:pc b)))))
+        (f b)
+      )
+    )
+  )
+)
 
 (def initialInstructions
   (merge
@@ -179,7 +198,7 @@
             )
           )
         )
-     \# (fn [b] (updatePC b))
+     \# (fn [b] (updatePC b true))
      \@ (fn [b] (assoc b :running false))
      \> (fn [b] (assoc b :dir [1 0]))
      \v (fn [b] (assoc b :dir [0 1]))
@@ -252,7 +271,7 @@
       \f (fn [b] (addToStack b 15))
       \[ rotateCW
       \] rotateCCW
-      \' (fn [nb] (let [b (updatePC nb)]
+      \' (fn [nb] (let [b (updatePC nb false)]
                     (updatePC (addToStack b (current b)))
                   ))
       \; (fn [nb]
@@ -289,6 +308,26 @@
             )
           )
       \t reflect ; FIXME: change this to implement concurrency
+      \k (fn [nb]
+           (let [
+                 nextinst (current (updatePC nb))
+                 {:keys [b item]} (removeFromStack nb)
+                ]
+             (if (= item 0)
+               (updatePC b) ; 0k needs to skip, which is weird...
+               (loop [x (range item)
+                     ret b]
+                 (do
+                   ;(println "k" nextinst x (int nextinst) (current ret) (:pc (updatePC nb)))
+                   (if (empty? x)
+                     ret
+                     (recur (rest x) (runInst ret nextinst))
+                   )
+                 )
+               )
+              )
+            )
+          )
     }
   )
 )
@@ -321,29 +360,15 @@
 (defn doInst [b]
   (let [
         inst (char (current b))
-        insts (:inst b)
-        f (get insts inst)
        ]
-    (updatePC
-      (if 
-        (and (not= inst \") (:stringMode b))
-        (addToStack b (int (current b)))
-        (if (nil? f)
-          (throw (Exception. (str "No such command '" inst "'")))
-          (f b)
-        )
-      )
-    )
+     (updatePC (runInst b inst))
   )
 )
 
 (defn doAndPrint [b]
   (let [ret (doInst b)]
     (do
-      (comment
-        (>= (first (:pc ret)) 100)
-        (prn (:pc ret) (:dir ret) (current ret) (:stack ret))
-      )
+      ;(prn (:pc ret) (:dir ret) (current ret) (:stack ret))
       ret
     )
   )
