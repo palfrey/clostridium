@@ -193,9 +193,11 @@
         insts (:inst b)
         f (get insts inst)
        ]
-    (if 
-      (and (not= inst \") (:stringMode b))
-      (addToStack b (int inst))
+    (if (and (not= inst \") (:stringMode b))
+      (if (and (not (empty? (:stack b))) (= (char inst) \  (char (peek (:stack b)))))
+        b
+        (addToStack b (int inst))
+      )
       (if (nil? f)
         (throw (Exception. (str "No such command '" inst "'" (seq (:pc b)))))
         (f b)
