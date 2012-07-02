@@ -62,7 +62,10 @@
   (fn [b]
     (let [one (removeFromStack b)
           two (removeFromStack (:b one))]
-      (addToStack (:b two) (op (:item two) (:item one)))
+      (try
+        (addToStack (:b two) (op (:item two) (:item one)))
+        (catch ArithmeticException e (addToStack (:b two) 0))
+      )
     )
   )
 )
@@ -261,6 +264,8 @@
      \+ (mathop +)
      \- (mathop -)
      \* (mathop *)
+     \/ (mathop quot)
+     \% (mathop rem)
      \` (mathop #(if (> %1 %2) 1 0))
      \\ (fn [b]
           (let [
