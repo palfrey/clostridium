@@ -308,7 +308,7 @@
       \f (fn [b] (addToStack b 15))
       \[ rotateCW
       \] rotateCCW
-      \' (fn [nb] (let [b (updatePC nb false)]
+      \' (fn [nb] (let [b (updatePC nb true)]
                     (updatePC (addToStack b (int (current b))))
                   ))
       \w (fn [nb] 
@@ -317,9 +317,9 @@
                   [one two] items
                   ]
               (if (> one two)
-                (rotateCCW b)
+                (rotateCW b)
                 (if (< one two)
-                  (rotateCW b)
+                  (rotateCCW b)
                   b
                 )
               )
