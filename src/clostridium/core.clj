@@ -357,6 +357,8 @@
               )
             )
           )
+      \n (fn [b] (assoc b :stack []))
+      \r reflect
     }
   )
 )
