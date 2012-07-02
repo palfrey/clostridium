@@ -214,7 +214,7 @@
     numberInsts 
     upperCharInsts
     {
-     \  (fn [b] b)
+     ;\  (fn [b] b)
      \. (fn [b]
           (let [{:keys [b item]} (removeFromStack b)]
             (do
