@@ -7,7 +7,7 @@
 
 (defn removeFromStack [b]
   (let [items (:stack b)]
-    (if (empty? (:stack b))
+    (if (empty? items)
       {
        :b b
        :item 0
@@ -69,20 +69,26 @@
 
 (def maxValue Integer/MAX_VALUE)
 
+(defn clipValue [val]
+  (if (>= val 0)
+    (if (>= val maxValue)
+      (- val maxValue)
+      val
+    )
+    (+ maxValue val)
+  )
+)
+
 (defn current
   ([b] (current (:grid b) (reverse (:pc b))))
   ([grid pc]
-   (if
-     (empty? pc)
-      grid
+   (if (empty? pc)
+      (if (seq? grid)
+        (throw (Exception. "Grid still a sequence"))
+        grid
+      )
       (current
-        (get grid 
-          (if (>= (first pc) 0)
-            (first pc)
-            (throw (Exception. "foo")); (+ maxValue (first pc))
-          )
-          \ 
-        )
+        (get grid (clipValue (first pc)) \ )
         (rest pc)
       )
     )
@@ -121,15 +127,7 @@
   ([b noJump]
     (let [initial 
           (map 
-            #(let [val (+ %1 %2)]
-               (if (< val 0)
-                 (+ val maxValue)
-                 (if (>= val maxValue)
-                   (- val maxValue)
-                   val
-                  )
-                )
-              )
+            #(clipValue (+ %1 %2))
              (:pc b) (:dir b)
           )]
       (assoc b :pc
@@ -183,7 +181,7 @@
    (if
      (= (count coord) 0)
      value
-     (assoc grid (first coord) (setVal (get grid (first coord)) (rest coord) value))
+     (assoc grid (clipValue (first coord)) (setVal (get grid (clipValue (first coord))) (rest coord) value))
    )
 )
 
@@ -284,7 +282,7 @@
                 {:keys [b items]} (removeManyFromStack nb 3)
                 [x y v] items
                 ]
-            (assoc b :grid (setVal (:grid b) [y x] v))
+            (assoc b :grid (setVal (:grid b) [y x] (char v)))
           )
         )
      \g (fn [nb]
@@ -292,7 +290,7 @@
                 {:keys [b items]} (removeManyFromStack nb 2)
                 [x y] items
                ]
-            (addToStack b (current (:grid b) [y x]))
+            (addToStack b (int (current (:grid b) [y x])))
           )
         )
       \a (fn [b] (addToStack b 10)) 
@@ -304,7 +302,7 @@
       \[ rotateCW
       \] rotateCCW
       \' (fn [nb] (let [b (updatePC nb false)]
-                    (updatePC (addToStack b (current b)))
+                    (updatePC (addToStack b (int (current b))))
                   ))
       \w (fn [nb] 
             (let [
