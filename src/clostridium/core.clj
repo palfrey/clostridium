@@ -140,15 +140,19 @@
             #(clipValue (+ %1 %2))
              (:pc b) (:dir b)
           )]
-      (assoc b :pc
-        (if (or noJump (:stringMode b) (not= (current (:grid b) (reverse initial)) \ ))
-          initial ; easy case, can just return the basic value
-          (if (not= (apply + (map #(Math/abs %) (:dir b))) 1)
+        (cond
+          noJump
+            (assoc b :pc initial) ; easy case, can just return the basic value
+          (:stringMode b)
+            (if (= (current (:grid b) (reverse initial)) \ )
+              (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse initial) (reverse dir)))) (int \ ))
+              (assoc b :pc initial)
+            )
+          (not= (apply + (map #(Math/abs %) dir)) 1)
             (throw (Exception. "Don't support directions with a magnitude other than 1"))
-            (reverse (jumpPC (:grid b) (reverse initial) (reverse (:dir b))))
-          )
+          :else
+            (assoc b :pc (reverse (jumpPC (:grid b) (reverse initial) (reverse dir))))
         )
-      )
     )
   )
 )
