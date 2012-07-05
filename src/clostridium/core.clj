@@ -1,5 +1,7 @@
 (ns clostridium.core
-  (:use [clojure.string :only [split-lines]]))
+  (:use [clojure.string :only [split-lines]])
+  (:gen-class)
+)
 
 (defn toss [b] (first (:stack b)))
 (defn ross [b] (rest (:stack b)))
@@ -451,12 +453,11 @@
   (loop [b (makeInitial fname)]
     (if (:running b)
       (recur (doAndPrint b))
-      nil
     )
   )
 )
 
 (defn -main
-  "I don't do a whole lot."
-  [& args]
-  (println "Hello, World!"))
+  [fname]
+  (runBefunge fname)
+)

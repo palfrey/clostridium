@@ -1,6 +1,7 @@
-(defproject clostridium "0.1.0-SNAPSHOT"
+(defproject clostridium "0.1"
   :description "Befunge interpreter in Clojure"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.3.0"]])
+  :url "https://github.com/palfrey/Clostridium"
+  :license {:name "GNU Affero General Public License v3"
+            :url "http://www.gnu.org/licenses/agpl-3.0.html"}
+  :dependencies [[org.clojure/clojure "1.3.0"]]
+  :main clostridium.core)
