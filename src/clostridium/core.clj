@@ -207,7 +207,7 @@
 )
 
 (defn rotateCCW [b] (assoc b :dir (let [[x y] (:dir b)] [(* y -1) x])))
-(defn rotateCW [b] (assoc b :dir (let [[x y] (:dir b)] [y (* x -1)])))
+(defn rotateCW [b]  (assoc b :dir (let [[x y] (:dir b)] [y (* x -1)])))
 
 (defn runInst [b inst]
   (let [
@@ -326,18 +326,20 @@
       \f (fn [b] (addToStack b 15))
       \[ rotateCW
       \] rotateCCW
-      \' (fn [nb] (let [b (updatePC nb true)]
-                    (updatePC (addToStack b (int (current b))))
-                  ))
+      \' (fn [nb]
+           (let [b (updatePC nb true)]
+             (addToStack b (int (current b)))
+           )
+         )
       \w (fn [nb] 
             (let [
                   {:keys [b items]} (removeManyFromStack nb 2)
                   [one two] items
                   ]
-              (if (> one two)
-                (rotateCW b)
-                (if (< one two)
-                  (rotateCCW b)
+              (if (< one two)
+                (rotateCCW b)
+                (if (> one two)
+                  (rotateCW b)
                   b
                 )
               )
@@ -349,8 +351,8 @@
                   [x y] items
                   ]
               (do
-                (println "Absolute delta " x " " y " " (:pc b) (:dir b))
-                (assoc b :dir [x y])
+                (println "Absolute delta:" x y (:pc b) (:dir b))
+                (assoc b :dir [y x])
               )
             )
           )
