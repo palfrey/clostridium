@@ -134,11 +134,11 @@
 )
 
 (defn updatePCSkipSpace 
-  ([b noJump]
+  ([b noJump dir]
     (let [initial 
           (map 
             #(clipValue (+ %1 %2))
-             (:pc b) (:dir b)
+             (:pc b) dir
           )]
         (cond
           noJump
@@ -159,9 +159,10 @@
 
 (defn updatePC 
   ([b] (updatePC b false))
-  ([b noJump]
+  ([b noJump] (updatePC b noJump (:dir b)))
+  ([b noJump dir] 
     (loop [
-           nb (updatePCSkipSpace b noJump)
+           nb (updatePCSkipSpace b noJump dir)
            colonMode false
           ]
       (if (or noJump (:stringMode nb))
@@ -169,14 +170,14 @@
         (if (= \; (current nb))
           (do
             ;(println ";" colonMode (:pc nb))
-            (recur (updatePCSkipSpace nb noJump) (not colonMode))
+            (recur (updatePCSkipSpace nb noJump dir) (not colonMode))
           )
           (if colonMode
             (do
               ;(println ";" colonMode (:pc nb) (current nb) noJump (:stringMode nb))
               (if (> (first (:pc nb)) 160)
                 (throw (Exception. "FIXME"))
-                (recur (updatePCSkipSpace nb noJump) colonMode)
+                (recur (updatePCSkipSpace nb noJump dir) colonMode)
               )
             )
             (do
@@ -370,6 +371,27 @@
           )
       \n (fn [b] (setNewToss b []))
       \r reflect
+      \j (fn [nb]
+           (let [
+                 {:keys [b item]} (removeFromStack nb)
+                 dir (if (< item 0) (map #(* % -1) (:dir b)) (:dir b))
+                 newI (if (< item 0) dec inc)
+                 ]
+             (do
+               ;(println "jump" (toss nb) item (:stack nb))
+               (loop [
+                    i 0
+                    b2 b
+                   ]
+                 (if (= i item)
+                   b2
+                   (recur (newI i) (updatePC b2 true dir))
+                 )
+               )
+             )
+           )
+         )
+
     }
   )
 )
