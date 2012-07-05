@@ -1,19 +1,26 @@
 (ns clostridium.core
   (:use [clojure.string :only [split-lines]]))
 
+(defn toss [b] (first (:stack b)))
+(defn ross [b] (rest (:stack b)))
+
+(defn setNewToss [b t]
+  (assoc b :stack (conj (ross b) t))
+)
+
 (defn addToStack [b item]
-    (assoc b :stack (conj (:stack b) item))
+  (setNewToss b (conj (toss b) item))
 )
 
 (defn removeFromStack [b]
-  (let [items (:stack b)]
+  (let [items (toss b)]
     (if (empty? items)
       {
        :b b
        :item 0
       }
       {
-       :b (assoc b :stack (pop items))
+       :b (setNewToss b (pop items))
        :item (peek items)
       }
     )
@@ -197,7 +204,7 @@
         f (get insts inst)
        ]
     (if (and (not= inst \") (:stringMode b))
-      (if (and (not (empty? (:stack b))) (= (char inst) \  (char (peek (:stack b)))))
+      (if (and (not (empty? (toss b))) (= (char inst) \  (char (peek (toss b)))))
         b
         (addToStack b (int inst))
       )
@@ -357,7 +364,7 @@
               )
             )
           )
-      \n (fn [b] (assoc b :stack []))
+      \n (fn [b] (setNewToss b []))
       \r reflect
     }
   )
@@ -375,7 +382,7 @@
    :inst initialInstructions
    :pc [0,0]
    :dir [1,0]
-   :stack []
+   :stack [[]]
    :running true
    :stringMode false
   }
