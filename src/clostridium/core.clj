@@ -379,6 +379,14 @@
           )
       \n (fn [b] (setNewToss b []))
       \r reflect
+      \s (fn [nb]
+          (let [
+                {:keys [b item]} (removeFromStack (updatePC nb))
+                ]
+            (assoc b :grid (setVal (:grid b) (:pc b) (char item)))
+          )
+        )
+      \z (fn [b] b)
       \j (fn [nb]
            (let [
                  {:keys [b item]} (removeFromStack nb)
