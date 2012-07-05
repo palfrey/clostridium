@@ -72,6 +72,12 @@
       (try
         (addToStack (:b two) (op (:item two) (:item one)))
         (catch ArithmeticException e (addToStack (:b two) 0))
+        (catch Exception e
+          (do
+            (println "math exception" op (:item two) (:item one))
+            (throw e)
+          )
+        )
       )
     )
   )
