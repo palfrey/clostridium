@@ -155,7 +155,7 @@
               (assoc b :pc initial)
             )
           (not= (apply + (map #(Math/abs %) dir)) 1)
-            (throw (Exception. "Don't support directions with a magnitude other than 1"))
+            (throw (Exception. (print-str "Don't like flying motion!" dir initial)))
           :else
             (assoc b :pc (reverse (jumpPC (:grid b) (reverse initial) (reverse dir))))
         )
