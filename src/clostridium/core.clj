@@ -88,13 +88,7 @@
 (def maxValue Integer/MAX_VALUE)
 
 (defn clipValue [val]
-  (if (>= val 0)
-    (if (>= val maxValue)
-      (- val maxValue)
-      val
-    )
-    (+ maxValue val)
-  )
+  (mod val maxValue)
 )
 
 (defn current
