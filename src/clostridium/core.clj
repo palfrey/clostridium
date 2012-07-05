@@ -134,7 +134,7 @@
     (case d
       -1 (j > >=)
       1 (j < <=)
-      0 (conj (jumpPCSkipSpaces (get grid c) (rest pc) (rest dir)) c)
+      0 (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
     )
   )
 )
