@@ -113,47 +113,48 @@
         d (first dir)
         c (first pc)
         j (fn [order choose]
-            (conj (rest pc) 
-             (let [
+            (conj (step (rest pc) (rest dir))
+              (let [
                 items (sort order (filter (partial choose c) (keys grid)))
-                coord (some #(if (= \  (current (get grid %) (rest pc))) false %) items)
+                coord (some #(if (= \  (current (get grid %) (step (rest pc) (rest dir)))) false %) items)
                    ]
                 (if (nil? coord)
                   (first (sort order (keys grid)))
                   ;(throw (Exception. (str "FIXME: " d " " c " " items " " (rest pc) " " (seq (map #(current (get grid %) (rest pc)) items)) (sort order (keys grid)))))
                   coord
                 )
-             )
+              )
             )
           )
        ]
     (case d
-      -1 (j > >=)
-      1 (j < <=)
+      -1 (j > >)
+      1 (j < <)
       0 (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
+      (throw (Exception. "Flying!"))
     )
   )
 )
 
+(defn- step [pc dir]
+  (map #(clipValue (+ %1 %2)) pc dir)
+)
+
 (defn updatePCSkipSpace 
   ([b noJump dir]
-    (let [initial 
-          (map 
-            #(clipValue (+ %1 %2))
-             (:pc b) dir
-          )]
+    (let [initial (step (:pc b) dir)]
         (cond
           noJump
             (assoc b :pc initial) ; easy case, can just return the basic value
           (:stringMode b)
             (if (= (current (:grid b) (reverse initial)) \ )
-              (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse initial) (reverse dir)))) (int \ ))
+              (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir)))) (int \ ))
               (assoc b :pc initial)
             )
-          (not= (apply + (map #(Math/abs %) dir)) 1)
-            (throw (Exception. (print-str "Don't like flying motion!" dir initial)))
+          (not= (current (:grid b) (reverse initial)) \ ) ; shortcut for simple "not a space" cases
+            (assoc b :pc initial)
           :else
-            (assoc b :pc (reverse (jumpPC (:grid b) (reverse initial) (reverse dir))))
+            (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir))))
         )
     )
   )
