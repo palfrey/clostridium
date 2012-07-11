@@ -107,6 +107,10 @@
    )
 )
 
+(defn- step [pc dir]
+  (map #(clipValue (+ %1 %2)) pc dir)
+)
+
 (defn jumpPC
   [grid pc dir]
   (let [
@@ -136,9 +140,6 @@
   )
 )
 
-(defn- step [pc dir]
-  (map #(clipValue (+ %1 %2)) pc dir)
-)
 
 (defn updatePCSkipSpace 
   ([b noJump dir]
