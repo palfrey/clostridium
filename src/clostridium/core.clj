@@ -146,13 +146,10 @@
         (cond
           noJump
             (assoc b :pc initial) ; easy case, can just return the basic value
-          (:stringMode b)
-            (if (= (current (:grid b) (reverse initial)) \ )
-              (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir)))) (int \ ))
-              (assoc b :pc initial)
-            )
           (not= (current (:grid b) (reverse initial)) \ ) ; shortcut for simple "not a space" cases
             (assoc b :pc initial)
+          (:stringMode b)
+            (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir)))) (int \ ))
           :else
             (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir))))
         )
