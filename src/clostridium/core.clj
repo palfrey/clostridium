@@ -347,10 +347,7 @@
                   {:keys [b items]} (removeManyFromStack nb 2)
                   [x y] items
                   ]
-              (do
-                (println "Absolute delta:" x y (:pc b) (:dir b))
-                (assoc b :dir [y x])
-              )
+              (assoc b :dir [y x])
             )
           )
       \t reflect ; FIXME: change this to implement concurrency
