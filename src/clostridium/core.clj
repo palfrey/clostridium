@@ -145,8 +145,8 @@
   ([b noJump dir]
     (let [initial (step (:pc b) dir)]
         (cond
-          noJump
-            (assoc b :pc initial) ; easy case, can just return the basic value
+          noJump ; easy case, can just return the basic value
+            (assoc b :pc initial)
           (not= (current (:grid b) (reverse initial)) \ ) ; shortcut for simple "not a space" cases
             (assoc b :pc initial)
           (:stringMode b)
