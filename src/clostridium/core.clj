@@ -107,8 +107,9 @@
    )
 )
 
-(defn- step [pc dir]
-  (map #(clipValue (+ %1 %2)) pc dir)
+(defn- step 
+  ([pc dir] (step pc dir 1))
+  ([pc dir howMany] (map #(clipValue (+ %1 (* howMany %2))) pc dir))
 )
 
 (defn jumpPC
@@ -116,26 +117,63 @@
   (let [
         d (first dir)
         c (first pc)
-        j (fn [order choose]
-            (conj (step (rest pc) (rest dir))
+        s (fn [hm val] (step (rest pc) (rest dir) (hm c val)))
+        cu (fn [hm val] (current (get grid val) (s hm val)))
+        j (fn [order choose howMany]
               (let [
                 items (sort order (filter (partial choose c) (keys grid)))
-                coord (some #(if (= \  (current (get grid %) (step (rest pc) (rest dir)))) false %) items)
-                   ]
-                (if (nil? coord)
-                  (first (sort order (keys grid)))
-                  ;(throw (Exception. (str "FIXME: " d " " c " " items " " (rest pc) " " (seq (map #(current (get grid %) (rest pc)) items)) (sort order (keys grid)))))
-                  coord
+                coord (some #(if (= \  (cu howMany %)) false %) items)
+                ret
+                  (if (nil? coord)
+                    (if (or (= d -1) (= d 1))
+                      (first (sort order (keys grid)))
+                      (let [
+                            n (+ 1 (howMany c (+ 1 maxValue)))
+                            init (step pc dir n)
+                          ]
+                        (do
+                          ;(println "jumping" init)
+                          (first (jumpPC grid init dir))
+                        )
+                      )
+                    )
+                    coord
+                  )
+                ]
+                (conj (step (rest pc) (rest dir) (howMany c ret)) ret)
+              )
+            )
+       ]
+    (cond
+      (= d -1) (j > > (constantly 1))
+      (> d 0)
+        (j <
+          #(let [
+                 diff (- %2 %1)
+                ]
+              (do
+                (if (not= d 1)
+                  ;(println d "diff" %1 %2 diff)
+                  nil
                 )
+                (and (< 0 diff) (= (rem diff d) 0))
+              )
+            )
+          #(let [
+                 diff (- %2 %1)
+                 n (quot diff d)
+                ]
+              (do
+                (if (not= d 1)
+                  ;(println d "n" %1 %2 n)
+                  nil
+                )
+                n
               )
             )
           )
-       ]
-    (case d
-      -1 (j > >)
-      1 (j < <)
-      0 (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
-      (throw (Exception. "Flying!"))
+      (= d 0) (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
+      :else (throw (Exception. "Flying!"))
     )
   )
 )
