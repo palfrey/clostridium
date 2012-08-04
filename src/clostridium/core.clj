@@ -423,9 +423,9 @@
       \r reflect
       \s (fn [nb]
           (let [
-                {:keys [b item]} (removeFromStack (updatePC nb))
+                {:keys [b item]} (removeFromStack (updatePC nb true))
                 ]
-            (assoc b :grid (setVal (:grid b) (:pc b) (char item)))
+            (assoc b :grid (setVal (:grid b) (reverse (:pc b)) (char item)))
           )
         )
       \z (fn [b] b)
