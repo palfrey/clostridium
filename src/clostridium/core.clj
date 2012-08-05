@@ -298,10 +298,14 @@
   )
 )
 
+(defn pushMany [existing more]
+  (vec (concat existing more))
+)
+
 (defn transfer [src dest ct rev]
   (let [op (if rev reverse identity)
         newSrc (popMany src ct)
-        newDest (vec (concat dest (op (peekMany src ct))))
+        newDest (pushMany dest (op (peekMany src ct)))
        ]
     (do
       ;(println "transfer" src dest ct)
