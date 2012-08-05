@@ -14,11 +14,15 @@
 (defn setNewSoss [b s]
   (let [nb (assoc b :stack (conj (conj (rest (ross b)) s) (toss b)))]
     (do
-      (println "new soss" (:stack nb))
-      (println "soss" (soss nb) (peek (toss nb)))
+      ;(println "new soss" (:stack nb))
+      ;(println "soss" (soss nb) (peek (toss nb)))
       nb
     )
   )
+)
+
+(defn newTossAndSoss [b t s]
+  (setNewToss (setNewSoss b s) t)
 )
 
 (defn addToStack [b item]
@@ -225,10 +229,10 @@
           (if colonMode
             (do
               ;(println ";" colonMode (:pc nb) (current nb) noJump (:stringMode nb))
-              (if (> (first (:pc nb)) 160)
-                (throw (Exception. "FIXME"))
+              ;(if (> (first (:pc nb)) 160)
+              ;  (throw (Exception. "FIXME"))
                 (recur (updatePCSkipSpace nb noJump dir) colonMode)
-              )
+              ;)
             )
             (do
               ;(println "found end")
@@ -267,6 +271,42 @@
         (throw (Exception. (str "No such command '" inst "'" (seq (:pc b)))))
         (f b)
       )
+    )
+  )
+)
+
+(defn popMany [st ct]
+  (if (= ct 0)
+    st
+    (if (= (count st) 0)
+      []
+      (popMany (pop st) (- ct 1))
+    )
+  )
+)
+
+(defn peekMany
+  ([st ct] (peekMany st ct []))
+  ([st ct items]
+    (if (= ct 0)
+      items
+      (if (= (count st) 0)
+        (peekMany [] (- ct 1) (cons 0 items))
+        (peekMany (pop st) (- ct 1) (cons (peek st) items))
+      )
+    )
+  )
+)
+
+(defn transfer [src dest ct rev]
+  (let [op (if rev reverse identity)
+        newSrc (popMany src ct)
+        newDest (vec (concat dest (op (peekMany src ct))))
+       ]
+    (do
+      ;(println "transfer" src dest ct)
+      ;(println "transfer" newSrc newDest)
+      [newSrc newDest]
     )
   )
 )
@@ -358,7 +398,7 @@
      \g (fn [nb]
           (let [
                 {:keys [b items]} (removeManyFromStack nb 2)
-                [x y] items
+                [y x] items
                ]
             (addToStack b (int (current (:grid b) [y x])))
           )
@@ -421,6 +461,24 @@
           )
       \n (fn [b] (setNewToss b []))
       \r reflect
+      \u (fn [nb] 
+           (if (= (count (ross nb)) 0)
+             (reflect nb)
+             (let [{:keys [b item]} (removeFromStack nb)]
+               (cond (= item 0)
+                       b
+                     (> item 0)
+                      (let [[s t] (transfer (soss b) (toss b) item true)]
+                        (newTossAndSoss b t s)
+                      )
+                     (< item 0)
+                      (let [[t s] (transfer (toss b) (soss b) (* -1 item) true)]
+                        (newTossAndSoss b t s)
+                      )
+               )
+             )
+           )
+         )
       \s (fn [nb]
           (let [
                 {:keys [b item]} (removeFromStack (updatePC nb true))
@@ -458,29 +516,18 @@
                    (cond (< item 0)
                           (setNewSoss newBoard (vecConcat (soss newBoard) (repeat (* -1 item) 0)))
                          (= item 0)
-                          b
+                          newBoard
                          (> item 0)
-                          (if (> (count (soss newBoard)) item)
-                            (let [[s t] (split-at item (soss newBoard))
-                                  sb (setNewSoss newBoard (vec s)) 
-                                  ]
-                              (do
-                                ;(println "sb" (:stack sb) t s (vecConcat (vec t) (toss newBoard)))
-                                (setNewToss sb (vecConcat (toss newBoard) (vec t) ))
-                              )
-                            )
-                            (let [k (count (soss newBoard))
-                                  d (- item k)]
-                              (setNewToss (setNewSoss newBoard []) (vecConcat (soss newBoard) (repeat d 0) (toss newBoard)))
-                            )
+                          (let [[s t] (transfer (soss newBoard) (toss newBoard) item false)]
+                            (newTossAndSoss newBoard t s)
                           )
-                    )
+                   )
                 ]
                 (do
-                  (println "stack" (:stack nb))
-                  (println "stack" (:stack newBoard) (toss newBoard))
-                  (println "stack" (:stack elementBoard))
-                  (println "so" (step (:pc elementBoard) (:dir elementBoard)))
+                  ;(println "stack" (:stack nb) item)
+                  ;(println "stack" (:stack newBoard) (toss newBoard))
+                  ;(println "stack" (:stack elementBoard))
+                  ;(println "so" (step (:pc elementBoard) (:dir elementBoard)))
                   (assoc
                     (setNewSoss elementBoard (vecConcat (soss elementBoard) (:storageOffset elementBoard)))
                     :storageOffset (step (:pc elementBoard) (:dir elementBoard))
@@ -491,36 +538,31 @@
      \} (fn [nb]
            (let [
                  {:keys [b item]} (removeFromStack nb)
-                 [y x] [(peek (soss b)) (peek (pop (soss b)))]
-                 newBoard (setNewSoss b (pop (pop (soss b))))
+                 [y x] (peekMany (soss b) 2)
+                 newBoard (setNewSoss b (popMany (soss b) 2))
                  vecConcat (comp vec concat)
                  elementBoard
                    (cond (< item 0)
-                          (setNewSoss newBoard (vec (drop (* -1 item) (soss newBoard))))
+                          (setNewSoss newBoard (vec (popMany (soss newBoard) (* -1 item))))
                          (= item 0)
                           newBoard
                          (> item 0)
-                          (if (> (count (toss newBoard)) item)
-                            (let [[s t] (split-at item (toss newBoard))
-                                  sb (setNewSoss newBoard (vecConcat (vec s) (soss newBoard)))
-                                  ]
-                                sb
-                            )
-                            (let [k (count (toss newBoard))
-                                  d (- item k)]
-                              (setNewSoss newBoard (vecConcat (soss newBoard) (repeat d 0) (toss newBoard)))
-                            )
+                          (let [[t s] (transfer (toss newBoard) (soss newBoard) item false)]
+                            (newTossAndSoss newBoard t s)
                           )
                     )
                 ]
                 (do
-                  (println "stack" (:stack nb))
-                  (println "stack" (:stack newBoard))
-                  (println "stack" (:stack elementBoard))
-                  (println "so" x y (:storageOffset nb))
-                  (assoc
-                    (assoc elementBoard :stack (ross elementBoard))
-                    :storageOffset [x y]
+                  ;(println "} stack" (:stack nb))
+                  ;(println "} stack" (:stack newBoard))
+                  ;(println "} stack" (:stack elementBoard))
+                  ;(println "so" x y (:storageOffset nb))
+                  (if (= (count (ross nb)) 0)
+                    (reflect nb)
+                    (assoc
+                      (assoc elementBoard :stack (ross elementBoard))
+                      :storageOffset [x y]
+                    )
                   )
                 )
             )
