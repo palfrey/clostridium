@@ -1,5 +1,5 @@
 (ns clostridium.core
-  (:use [clojure.string :only [split-lines]])
+  (:use [clojure.string :only [split]])
   (:gen-class)
 )
 
@@ -45,11 +45,14 @@
 )
 
 (defn removeManyFromStack [nb many]
-  (loop [items [] board nb]
-    (if (= (count items) many)
-      {:b board :items items}
-      (let [{:keys [b item]} (removeFromStack board)]
-        (recur (conj items item) b)
+  (if (< many 0) ;bad value
+    {:b nb :items []}
+    (loop [items [] board nb]
+      (if (= (count items) many)
+        {:b board :items items}
+        (let [{:keys [b item]} (removeFromStack board)]
+          (recur (conj items item) b)
+        )
       )
     )
   )
@@ -289,7 +292,8 @@
 (defn clipChar [i]
   (cond
     (char? i) i
-    (> i 256) nil
+    (> i (int Character/MAX_VALUE)) \ 
+    (< i 0) \ 
     :default (char i)
   )
 )
@@ -305,7 +309,13 @@
         (addToStack b (int inst))
       )
       (if (nil? f)
-        (throw (Exception. (str "No such command '" inst "'" (seq (:pc b)))))
+        (do 
+          (str "No such command '" inst "'" (seq (:pc b)))
+          ;(if (and (<= (int inst) 128) (>= (int inst) 32)) ; within valid range, but undefined
+            (reflect b)
+            ;b
+          ;)
+        )
         (f b)
       )
     )
@@ -446,7 +456,7 @@
                 [y x v] items
                 [ox oy] (map + [x y] (:storageOffset b))
                 ]
-            (assoc b :grid (setVal (:grid b) [oy ox] (char v)))
+            (assoc b :grid (setVal (:grid b) [oy ox] (clipChar v)))
           )
         )
      \g (fn [nb]
@@ -467,7 +477,10 @@
       \] rotateCCW
       \' (fn [nb]
            (let [b (updatePC nb true)]
-             (addToStack b (int (current b)))
+             (do
+               ;(println "pushing" (int (current b)) (:pc b))
+               (addToStack b (int (current b)))
+             )
            )
          )
       \w (fn [nb] 
@@ -537,7 +550,7 @@
           (let [
                 {:keys [b item]} (removeFromStack (updatePC nb true))
                 ]
-            (assoc b :grid (setVal (:grid b) (reverse (:pc b)) (char item)))
+            (assoc b :grid (setVal (:grid b) (reverse (:pc b)) (clipChar item)))
           )
         )
       \z (fn [b] b)
@@ -686,7 +699,8 @@
 
 (defn buildGrid [fname]
   (let [data (slurp fname)
-        lines (split-lines data)]
+        ;fixedData (apply str (replace {"\f" ""} data))
+        lines (split data #"(?:(?:\r\n)|\n|\r)")]
     (zipmap (range (count lines)) (map #(zipmap (range (count %1)) (vec %1)) lines))
   )
 )
