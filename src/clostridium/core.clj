@@ -352,6 +352,19 @@
   )
 )
 
+(defn makeFingerprint [nb]
+  (let [
+       {:keys [b item]} (removeFromStack nb)
+       {:keys [b items]} (removeManyFromStack b item)
+       fingerprint (reduce #(+ (* 256 %1) %2) 0 items)
+      ]
+    {
+     :b b
+     :fingerprint fingerprint
+    }
+  )
+)
+
 (def initialInstructions
   (merge
     numberInsts 
@@ -651,6 +664,22 @@
                 
               )
             )
+        \( (fn [nb]
+             (let [{:keys [b fingerprint]} (makeFingerprint nb)]
+               (do
+                 ;(println "Begin Fingerprint" fingerprint)
+                 (reflect b) ; FIXME: unimplemented
+               )
+             )
+           )
+        \) (fn [nb]
+             (let [{:keys [b fingerprint]} (makeFingerprint nb)]
+               (do
+                 ;(println "End fingerprint" fingerprint)
+                 (reflect b) ; FIXME: unimplemented
+               )
+             )
+           )
       }
   )
 )
