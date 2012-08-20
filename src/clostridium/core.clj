@@ -100,10 +100,19 @@
   )
 )
 
-(def maxValue Integer/MAX_VALUE)
+(def maxValue (quot Integer/MAX_VALUE 2)) ; divided by two to avoid exceeding MAX_VALUE while we're doing clipValue
+(def negMaxValue (* -1 maxValue))
+
+; want a value between -maxValue .. +maxValue
+; Start by adding maxValue to get all the valid values within 0..(2*maxValue)
+; Then mod to clip within that range
+; Then subtract maxValue to get it back to the original value
 
 (defn clipValue [val]
-  (mod val maxValue)
+  (if (and (< val maxValue) (< negMaxValue val))
+    val
+    (- (mod (+ val maxValue) (* maxValue 2)) maxValue)
+  )
 )
 
 (defn current
