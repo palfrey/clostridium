@@ -131,6 +131,26 @@
    )
 )
 
+(defn orderedPoint [b order]
+  (loop [
+          grid (:grid b)
+          values []
+        ]
+    (if (char? grid)
+      values
+      (let [currentKey (first (sort order (keys grid)))]
+        (do
+          ;(println "grid" currentKey (sort order (keys grid)))
+          (recur (get grid currentKey) (conj values currentKey))
+        )
+      )
+    )
+  )
+)
+
+(defn leastPoint [b] (orderedPoint b <))
+(defn greatestPoint [b] (orderedPoint b >))
+
 (defn- step 
   ([pc dir] (step pc dir 1))
   ([pc dir howMany] (map #(clipValue (+ %1 (* howMany %2))) pc dir))
@@ -266,13 +286,21 @@
 (defn rotateCCW [b] (assoc b :dir (let [[x y] (:dir b)] [(* y -1) x])))
 (defn rotateCW [b]  (assoc b :dir (let [[x y] (:dir b)] [y (* x -1)])))
 
+(defn clipChar [i]
+  (cond
+    (char? i) i
+    (> i 256) nil
+    :default (char i)
+  )
+)
+
 (defn runInst [b inst]
   (let [
         insts (:inst b)
         f (get insts inst)
        ]
     (if (and (not= inst \") (:stringMode b))
-      (if (and (not (empty? (toss b))) (= (char inst) \  (char (peek (toss b)))))
+      (if (and (not (empty? (toss b))) (= (clipChar inst) \  (clipChar (peek (toss b)))))
         b
         (addToStack b (int inst))
       )
@@ -580,6 +608,49 @@
                 )
             )
           )
+        \y (fn [nb] 
+             (let [cal (-> (java.util.Calendar/getInstance) .getTime bean)
+                   {:keys [b item]} (removeFromStack nb)
+                   info
+                    (concat
+                      [
+                       0 ; no concurrency, no I/O, no execute
+                       -1 ; lots!
+                       (reduce #(+' (*' 256 %1) %2) (map int "Clostridium")) ; handprint
+                       100 ; version number (1.00)
+                       0 ; operating paradigm unavailable
+                       (int (. java.io.File pathSeparatorChar))
+                       2 ; befunge
+                       0 ; IP identifier
+                       0 ; IP team number
+                      ]
+                       (reverse (:pc b))
+                       (reverse (:dir b))
+                       (reverse (:storageOffset b))
+                       (leastPoint b)
+                       (greatestPoint b)
+                      [
+                        (+ (* 256 256 (:year cal)) (* 256 (inc (:month cal))) (:date cal))
+                        (+ (* 256 256 (:hours cal)) (* 256 (:minutes cal)) (:seconds cal))
+                        (count (:stack b))
+                      ]
+                       (for [x (:stack b)] (count x))
+                       (repeat 5 0)
+                      )
+                   newBoard (setNewToss nb (pushMany (toss b) (reverse info)))
+                   ]
+               (if (> item 0)
+                  (let [keptItem (peek (popMany (toss newBoard) (- item 1)))]
+                    (do
+                      ;(println "kept" item keptItem (:dir nb) (:storageOffset nb) (:pc nb))
+                      (addToStack b keptItem)
+                    )
+                  )
+                  newBoard
+               )
+                
+              )
+            )
       }
   )
 )
