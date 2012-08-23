@@ -699,8 +699,8 @@
 
 (defn buildGrid [fname]
   (let [data (slurp fname)
-        ;fixedData (apply str (replace {"\f" ""} data))
-        lines (split data #"(?:(?:\r\n)|\n|\r)")]
+        fixedData (apply str (remove #(= % \formfeed) data))
+        lines (split fixedData #"(?:(?:\r\n)|\n|\r)")]
     (zipmap (range (count lines)) (map #(zipmap (range (count %1)) (vec %1)) lines))
   )
 )
