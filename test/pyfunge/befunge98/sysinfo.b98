@@ -1,0 +1,44 @@
+  v    ;note: "12y" actually means pushing 12 (not 1 and 2) and executing "y".;
+  7    ;      there are more detailed tests for ignored fields.;
+  8
+  9
+  a
+  b
+  c
+  *
+  *
+  0
+  >y:\48*\`\0\`!*#v_0a"13 dna 0 neewteb t'nsi y1 :DAB">:#,_@  ;1y -- flag (0..31);  v
+      0"stcelfer y :DAB">:#,_@                                                      >
+                  $  ;2y -- cell size, ignored;
+                  $  ;3y -- handprint, ignored;
+                  $  ;4y -- version, ignored;
+                  $  ;5y -- operating paradigm, ignored;
+                  $  ;6y -- path separator, ignored;
+                  2  ;7y -- number of dimensions (2);
+                >#-0a"2 hsup t'ndid )snoisnemid fo #( y7 :DAB">:#,_@
+                ^ _$$a-\3v  ;8y, 9y -- IP identifier and team, ignored;
+                         -  ;10y, 11y -- IP position (<3, 10>);
+                       >#*0a">10 ,3< hsup t'ndid )noitisop( y11 dna y01 :DAB">:#,_@
+                       ^ _\1-v  ;12y, 13y -- IP delta (<1, 0>);
+                           >#*0a">0 ,1< hsup t'ndid )atled( y31 dna y21 :DAB">:#,_@
+                           ^ _v  ;14y, 15y -- IP storage offset (<0, 0>);
+                            >#*0a">0 ,0< hsup t'ndid )tesffo egarots( y51 dna y41 :DAB">:#,_@
+   v                        ^ _\1-  ;16y, 17y -- least point of Funge space (<1, 0>);
+ >#*0a">0 ,1< hsup t'ndid )tniop tsael( y71 dna y61 :DAB">:#,_@
+ ^ _67*-\9a*-1-v  ;18y, 19y -- offset to greatest point of Funge space (<91, 42>);
+             >#*0a">24 ,19< hsup t'ndid )tniop tsetaerg ot tesffo( y91 dna y81 :DAB">:#,_@
+             ^ _$$v  ;20y, 21y -- date and time, ignored;
+                  1  ;22y -- size of stack stack (1);
+                >#-0a"1 hsup t'ndid )kcats kcats fo ezis( y22 :DAB">:#,_@
+                ^ _4v  ;23y -- size of the top of stack stack (4);
+                  >#-0a"4 hsup t'ndid )SSOT fo ezis( y32 :DAB">:#,_@
+                  ^ _v  ;24y.. -- arguments and environment variables, ignored;
+                     v<
+                    >_|  ;skip argument list. terminates at third consecutive null.;
+                     ^_v<
+                      >_|  ;skip envvar list. terminates at second consecutive null.;
+                        >abc**v  ;cells pushed by y is end. check for sentinel.;
+                            >#-0a"dedeen naht sllec erom ro ssel dehsup y :DAB">:#,_@
+                            ^ _0a"sdleif emos tsael ta rof krow smees y :DOOG">:#,_@
+
