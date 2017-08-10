@@ -1,2 +1,3 @@
 language: clojure
+sudo: false
 script: lein test
