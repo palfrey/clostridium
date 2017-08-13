@@ -1,0 +1,11 @@
+/* Based off of https://stackoverflow.com/a/20457076/320546 */
+
+.square {
+    float: left;
+    width: 13px;
+    text-align: center;
+}
+
+.active {
+    background-color: lightblue;
+}

@@ -1,23 +1,31 @@
 (ns clostridium.core
-  (:require [reagent.core :as r]))
+  (:require [reagent.core :as r]
+            [clostridium.befunge :as befunge]))
 
-(def click-count (r/atom 0))
+(defonce app-state (r/atom {}))
 
-(defn counting-component []
-  [:div
-   "The atom " [:code "click-count"] " has value: "
-   @click-count ". "
-   [:input {:type "button" :value "Click me!"
-            :on-click #(swap! click-count inc)}]])
+(defn grid []
+  (let [b (-> @app-state :b)
+        data (:grid b)
+        pc (:pc b)]
+    [:div
+     (doall (for [row (keys data)
+                  column (keys (get data row))
+                  value (get (get data row) column)
+                  :let [id (str row "-" column "-")]]
+              ^{:key (str id "sq")}
+              [:div {:class (str (if (= pc [column row]) "active " "") "square")}
+               value]))]))
 
 (defn dev-setup []
   (when ^boolean js/goog.DEBUG
     (enable-console-print!)))
 
 (defn reload []
-  (r/render [counting-component]
+  (r/render [grid]
             (.getElementById js/document "app")))
 
 (defn ^:export main []
   (dev-setup)
+  (swap! app-state assoc :b (befunge/makeInitial "64+\"!dlroW ,olleH\">:#,_@"))
   (reload))
