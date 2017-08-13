@@ -148,14 +148,18 @@
 
 (defn updatePCSkipSpace
   ([b noJump dir]
-   (let [initial (step (:pc b) dir)]
+   (let [initial (step (:pc b) dir)
+         sp (peek (toss b))
+         spaceValue (int \ )]
      (cond
        noJump
        (assoc b :pc initial)
        (not= (current (:grid b) (reverse initial)) \ ) ; shortcut for simple "not a space" cases
        (assoc b :pc initial)
        (:stringMode b)
-       (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir)))) (int \ ))
+       (if (= sp spaceValue)
+         (assoc b :pc initial)
+         (addToStack (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir)))) spaceValue))
        :else
        (assoc b :pc (reverse (jumpPC (:grid b) (reverse (:pc b)) (reverse dir))))))))
 
