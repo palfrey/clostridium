@@ -20,7 +20,7 @@
            `(deftest ~(symbol shortname)
               (let [expected# (slurp ~(str (without-extension testPath) ".expected"))
                     trimExpected# (subs expected# 0 (- (count expected#) 1))
-                    result# (with-out-str (runBefunge ~testPath))]
+                    result# (with-out-str (runBefunge (slurp ~testPath)))]
                 (is (= trimExpected# result#))))))))
 
 (runPyfungeTests)

@@ -1,5 +1,6 @@
 (ns clostridium.befunge
-  (:use [clojure.string :only [split]]))
+  (:use [clojure.string :only [split]])
+  #?(:cljs (:require [decimal.core :as dc])))
 
 (defn toss [b] (first (:stack b)))
 (defn soss [b] (second (:stack b)))
@@ -61,13 +62,13 @@
           two (removeFromStack (:b one))]
       (try
         (addToStack (:b two) (op (:item two) (:item one)))
-        (catch ArithmeticException e (addToStack (:b two) 0))
-        (catch Exception e
+        #?(:clj (catch ArithmeticException e (addToStack (:b two) 0)))
+        (catch #?(:clj Exception :cljs js/Object) e
           (do
             (println "math exception" op (:item two) (:item one))
             (throw e)))))))
 
-(def maxValue (quot Integer/MAX_VALUE 2)) ; divided by two to avoid exceeding MAX_VALUE while we're doing clipValue
+(def maxValue (quot #?(:clj Integer/MAX_VALUE :cljs js/Number MAX_VALUE) 2)) ; divided by two to avoid exceeding MAX_VALUE while we're doing clipValue
 (def negMaxValue (* -1 maxValue))
 
 ; want a value between -maxValue .. +maxValue
@@ -80,12 +81,16 @@
     val
     (- (mod (+ val maxValue) (* maxValue 2)) maxValue)))
 
+(defn throw-msg [msg]
+  #?(:clj (throw (Exception. msg))
+     :cljs (js/throw msg)))
+
 (defn current
   ([b] (current (:grid b) (reverse (:pc b))))
   ([grid pc]
    (if (empty? pc)
      (if (seq? grid)
-       (throw (Exception. "Grid still a sequence"))
+       (throw-msg "Grid still a sequence")
        grid)
      (current
       (get grid (clipValue (first pc)) \ )
@@ -144,7 +149,7 @@
                 nil)
               n)))
       (= d 0) (conj (jumpPC (get grid c) (rest pc) (rest dir)) c)
-      :else (throw (Exception. "Flying!")))))
+      :else (throw-msg "Flying!"))))
 
 (defn updatePCSkipSpace
   ([b noJump dir]
@@ -190,7 +195,7 @@
 (defn clipChar [i]
   (cond
     (char? i) i
-    (> i (int Character/MAX_VALUE)) \ 
+    (> i #?(:clj (int Character/MAX_VALUE) :cljs 65535)) \ 
     (< i 0) \ 
     :default (char i)))
 
@@ -416,13 +421,14 @@
                 (assoc elementBoard :stack (ross elementBoard))
                 :storageOffset [x y])))))
     \y (fn [nb]
-         (let [cal (-> (java.util.Calendar/getInstance) .getTime bean)
+         (let [cal #?(:clj (-> (java.util.Calendar/getInstance) .getTime bean) :cljs (js/Date.))
                {:keys [b item]} (removeFromStack nb)
                info
                (concat
                 [0 ; no concurrency, no I/O, no execute
                  -1 ; lots!
-                 (reduce #(+' (*' 256 %1) %2) (map int "Clostridium")) ; handprint
+                 (reduce #?(:clj #(+' (*' 256 %1) %2)
+                            :cljs #(dc/+ (dc/mul 256 %1) (dc/decimal %2))) (map int "Clostridium")) ; handprint
                  100 ; version number (1.00)
                  0 ; operating paradigm unavailable
                  (int (. java.io.File pathSeparatorChar))
@@ -459,14 +465,13 @@
              (reflect b)))) ; FIXME: unimplemented
 }))
 
-(defn buildGrid [fname]
-  (let [data (slurp fname)
-        fixedData (apply str (remove #(= % \formfeed) data))
+(defn buildGridfromString [data]
+  (let [fixedData (apply str (remove #(= % \formfeed) data))
         lines (split fixedData #"(?:(?:\r\n)|\n|\r)")]
     (zipmap (range (count lines)) (map #(zipmap (range (count %1)) (vec %1)) lines))))
 
-(defn makeInitial [fname]
-  {:grid (buildGrid fname)
+(defn makeInitial [data]
+  {:grid (buildGridfromString data)
    :inst initialInstructions
    :pc [0,0]
    :dir [1,0]
@@ -485,11 +490,12 @@
       ;(prn (:pc ret) (:dir ret) (current ret) (:stack ret))
       ret)))
 
-(defn runBefunge [fname]
-  (loop [b (makeInitial fname)]
+(defn runBefunge [data]
+  (loop [b (makeInitial data)]
     (if (:running b)
       (recur (doAndPrint b)))))
 
-(defn -main
-  [fname]
-  (runBefunge fname))
+#?(:clj
+   (defn -main
+     [fname]
+     (runBefunge (slurp fname))))

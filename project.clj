@@ -5,9 +5,11 @@
             :url "http://www.gnu.org/licenses/agpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.229"]
-                 [reagent "0.7.0"]]
+                 [reagent "0.7.0"]
+                 [funcool/decimal "1.0.1"]]
   :main clostridium.core
   :aliases {"fmt-and-test" ["do" ["cljfmt" "fix"] ["cljfmt" "fix" "project.clj"] "test"]}
+  :cljfmt {:file-pattern #"\.clj[sxc]?$"}
   :cljsbuild {:builds [{:id "example"
                         :source-paths ["src/"]
                         :figwheel {:on-jsload "clostridium.core/reload"}
