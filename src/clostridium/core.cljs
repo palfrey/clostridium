@@ -26,8 +26,9 @@
                                value]))))))]))
 
 (defn info []
-  (let [b (-> @app-state :b)]
+  (let [b (:b @app-state)]
     [:div
+     [:button {:style {:width "60px" :height "30px"} :on-click #(swap! app-state assoc :b (befunge/doInst b))} "Step"]
      [:h3 "PC"]
      [:p (str (:pc b))]
      [:h3 "Stack"]

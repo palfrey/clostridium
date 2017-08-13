@@ -42,19 +42,27 @@
 (defn reflect [b]
   (assoc b :dir (map #(* -1 %) (:dir b))))
 
+(defn charcode [c]
+  #?(:clj (int c)
+     :cljs (.charCodeAt c 0)))
+
 (def numberInsts
   (loop [insts {}
          digit 0]
     (if (= digit 10)
       insts
-      (recur (assoc insts (char (+ (int \0) digit)) (fn [b] (addToStack b digit))) (inc digit)))))
+      (recur
+       (assoc insts
+              (char (+ (charcode \0) digit))
+              (fn [b] (addToStack b digit)))
+       (inc digit)))))
 
 (def upperCharInsts
   (loop [insts {}
          c 0]
     (if (= c 26)
       insts
-      (recur (assoc insts (char (+ (int \A) c)) (fn [b] (reflect b))) (inc c)))))
+      (recur (assoc insts (char (+ (charcode \A) c)) (fn [b] (reflect b))) (inc c)))))
 
 (defn mathop [op]
   (fn [b]
@@ -68,7 +76,7 @@
             (println "math exception" op (:item two) (:item one))
             (throw e)))))))
 
-(def maxValue (quot #?(:clj Integer/MAX_VALUE :cljs js/Number MAX_VALUE) 2)) ; divided by two to avoid exceeding MAX_VALUE while we're doing clipValue
+(def maxValue (quot #?(:clj Integer/MAX_VALUE :cljs 2147483647) 2)) ; divided by two to avoid exceeding MAX_VALUE while we're doing clipValue
 (def negMaxValue (* -1 maxValue))
 
 ; want a value between -maxValue .. +maxValue
@@ -205,7 +213,7 @@
     (if (and (not= inst \") (:stringMode b))
       (if (and (not (empty? (toss b))) (= (clipChar inst) \  (clipChar (peek (toss b)))))
         b
-        (addToStack b (int inst)))
+        (addToStack b (charcode inst)))
       (if (nil? f)
         (do
           (str "No such command '" inst "'" (seq (:pc b)))
@@ -322,7 +330,7 @@
          (let [b (updatePC nb true)]
            (do
                ;(println "pushing" (int (current b)) (:pc b))
-             (addToStack b (int (current b))))))
+             (addToStack b (charcode (current b))))))
     \w (fn [nb]
          (let [{:keys [b items]} (removeManyFromStack nb 2)
                [one two] items]
