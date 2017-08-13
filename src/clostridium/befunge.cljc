@@ -1,4 +1,4 @@
-(ns clostridium.core
+(ns clostridium.befunge
   (:use [clojure.string :only [split]]))
 
 (defn toss [b] (first (:stack b)))

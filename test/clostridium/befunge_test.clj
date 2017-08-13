@@ -1,7 +1,7 @@
-(ns clostridium.core_test
+(ns clostridium.befunge_test
   (:require
    [clojure.test :refer [deftest is]]
-   [clostridium.core :refer [runBefunge]]
+   [clostridium.befunge :refer [runBefunge]]
    [clojure.pprint :refer [pprint]]))
 
 (defn without-extension [path]
