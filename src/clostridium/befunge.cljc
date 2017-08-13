@@ -163,7 +163,7 @@
   ([b noJump dir]
    (let [initial (step (:pc b) dir)
          sp (peek (toss b))
-         spaceValue (int \ )]
+         spaceValue (charcode \ )]
      (cond
        noJump
        (assoc b :pc initial)
@@ -317,7 +317,7 @@
     \g (fn [nb]
          (let [{:keys [b items]} (removeManyFromStack nb 2)
                [y x] items]
-           (addToStack b (int (current (:grid b) [y x])))))
+           (addToStack b (charcode (current (:grid b) [y x])))))
     \a (fn [b] (addToStack b 10))
     \b (fn [b] (addToStack b 11))
     \c (fn [b] (addToStack b 12))
