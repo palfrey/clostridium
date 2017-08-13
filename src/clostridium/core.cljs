@@ -25,12 +25,30 @@
                               [:div {:class (str (if (= pc [column row]) "active " "") "square")}
                                value]))))))]))
 
+(defn info []
+  (let [b (-> @app-state :b)]
+    [:div
+     [:h3 "PC"]
+     [:p (str (:pc b))]
+     [:h3 "Stack"]
+     [:p (str (:stack b))]
+     [:h3 "Direction"]
+     [:p (str (:dir b))]
+     [:h3 "String mode"]
+     [:p (str (:stringMode b))]]))
+
+(defn display []
+  [:div
+   [:div {:id "header"} [:h1 "Clostridium"]]
+   [:div {:id "navigation"} [info]]
+   [:div {:id "content"} [grid]]])
+
 (defn dev-setup []
   (when ^boolean js/goog.DEBUG
     (enable-console-print!)))
 
 (defn reload []
-  (r/render [grid]
+  (r/render [display]
             (.getElementById js/document "app")))
 
 (defn ^:export main []
