@@ -5,4 +5,6 @@
             :url "http://www.gnu.org/licenses/agpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]]
   :main clostridium.core
-  :plugins [[lein-auto "0.1.3"]])
+  :aliases {"fmt-and-test" ["do" ["cljfmt" "fix"] ["cljfmt" "fix" "project.clj"] "test"]}
+  :plugins [[lein-auto "0.1.3"]
+            [lein-cljfmt "0.5.7"]])
