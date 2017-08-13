@@ -742,31 +742,6 @@
   )
 )
 
-(defn runPyfungeTests []
-  (for [
-        folder (.listFiles (java.io.File. "test/pyfunge"))
-        testName (filter #(.endsWith % ".b98") (map #(.getAbsolutePath %) (.listFiles folder)))
-      ]
-    (do
-      (.write *err* testName)
-      (.write *err* (with-out-str (newline)))
-      (.flush *err*)
-      (flush)
-      (let [
-            expected (slurp (.replace testName ".b98" ".expected"))
-            trimExpected (subs expected 0 (- (count expected) 1))
-            result (with-out-str (runBefunge testName))
-           ]
-        (if (= trimExpected result)
-          true
-          (throw (Exception. (str "Expected: '" trimExpected "' got: '" result "' during " testName)))
-        )
-      )
-      ;(throw (Exception. (str "foo " testName)))
-    )
-  )
-)
-
 (defn -main
   [fname]
   (runBefunge fname)

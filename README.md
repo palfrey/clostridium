@@ -4,14 +4,17 @@ A Befunge-98 interpreter written in Clojure
 
 ## Usage
 
-`lein run <befunge file>`
+1. `lein run <befunge file>`
 
-Or `lein repl` then:<br />
-`(use 'clostridium.core)`<br />
-followed by<br />
-`(runBefunge "<befunge file>")`<br />
-or<br />
-`(runPyfungeTests)`
+or
+
+1. `lein repl`
+2. `(use 'clostridium.core)`
+3. `(runBefunge "<befunge file>")`
+
+or
+
+`lein test` to run all the pyfunge tests
 
 ## License
 
