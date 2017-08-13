@@ -2,8 +2,16 @@
 
 .square {
     float: left;
-    width: 13px;
+    width: 39px;
     text-align: center;
+}
+
+.column {
+    background-color: lightgreen;
+}
+
+.row {
+    background-color: lightcoral;
 }
 
 .active {
