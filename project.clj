@@ -10,7 +10,7 @@
   :main clostridium.core
   :aliases {"fmt-and-test" ["do" ["cljfmt" "fix"] ["cljfmt" "fix" "project.clj"] "test"]}
   :cljfmt {:file-pattern #"\.clj[sxc]?$"}
-  :cljsbuild {:builds [{:id "example"
+  :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/"]
                         :figwheel {:on-jsload "clostridium.core/reload"}
                         :compiler {:main "clostridium.core"
