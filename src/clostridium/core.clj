@@ -97,9 +97,7 @@
     (if (char? grid)
       values
       (let [currentKey (first (sort order (keys grid)))]
-        (do
-          ;(println "grid" currentKey (sort order (keys grid)))
-          (recur (get grid currentKey) (conj values currentKey)))))))
+        (recur (get grid currentKey) (conj values currentKey))))))
 
 (defn leastPoint [b] (orderedPoint b <))
 (defn greatestPoint [b] (orderedPoint b >))
@@ -152,7 +150,7 @@
   ([b noJump dir]
    (let [initial (step (:pc b) dir)]
      (cond
-       noJump ; easy case, can just return the basic value
+       noJump
        (assoc b :pc initial)
        (not= (current (:grid b) (reverse initial)) \ ) ; shortcut for simple "not a space" cases
        (assoc b :pc initial)
@@ -170,20 +168,10 @@
      (if (or noJump (:stringMode nb))
        nb
        (if (= \; (current nb))
-         (do
-            ;(println ";" colonMode (:pc nb))
-           (recur (updatePCSkipSpace nb noJump dir) (not colonMode)))
+         (recur (updatePCSkipSpace nb noJump dir) (not colonMode))
          (if colonMode
-           (do
-              ;(println ";" colonMode (:pc nb) (current nb) noJump (:stringMode nb))
-              ;(if (> (first (:pc nb)) 160)
-              ;  (throw (Exception. "FIXME"))
-             (recur (updatePCSkipSpace nb noJump dir) colonMode)
-              ;)
-)
-           (do
-              ;(println "found end")
-             nb)))))))
+           (recur (updatePCSkipSpace nb noJump dir) colonMode)
+           nb))))))
 
 (defn setVal
   [grid coord value]
