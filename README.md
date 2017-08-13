@@ -1,5 +1,7 @@
 # Clostridium
 
+[![Build Status](https://travis-ci.org/palfrey/clostridium.svg?branch=master)](https://travis-ci.org/palfrey/clostridium)
+
 A Befunge-98 interpreter written in Clojure
 
 ## Usage
@@ -18,5 +20,4 @@ or
 
 ## License
 
-Copyright &copy; 2012 Tom Parker<br />
-Distributed under the <a href="LICENSE">AGPLv3</a>
+Copyright &copy; 2012-2017 Tom Parker. Distributed under the <a href="LICENSE">AGPLv3</a>
