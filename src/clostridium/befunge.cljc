@@ -439,7 +439,7 @@
                             :cljs #(dc/+ (dc/mul 256 %1) (dc/decimal %2))) (map int "Clostridium")) ; handprint
                  100 ; version number (1.00)
                  0 ; operating paradigm unavailable
-                 (int (. java.io.File pathSeparatorChar))
+                 (charcode #?(:clj (. java.io.File pathSeparatorChar) :cljs "/"))
                  2 ; befunge
                  0 ; IP identifier
                  0 ; IP team number
