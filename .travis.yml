@@ -1,4 +1,5 @@
 language: clojure
+dist: trusty
 sudo: false
 script: lein do check-fmt, test, cljs-test
 lein: 2.5.3
