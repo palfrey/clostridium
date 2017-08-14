@@ -1,6 +1,7 @@
 language: clojure
 sudo: false
 script: lein do check-fmt, test, cljs-test
+lein: 2.5.3
 
 cache:
   directories:
