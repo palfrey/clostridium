@@ -1,11 +1,14 @@
 (ns clostridium.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as r]
             [clostridium.befunge :as befunge]
             [goog.string :as gstring]
             [goog.string.format]
-            [clojure.contrib.humanize :as human]))
+            [clojure.contrib.humanize :as human]
+            [cljs.core.async :refer [<! timeout]]))
 
-(defonce app-state (r/atom {:console ""}))
+(defonce app-state (r/atom {:console ""
+                            :auto-run false}))
 
 (defn grid []
   (let [b (-> @app-state :b)
@@ -26,13 +29,28 @@
                               [:div {:class (str (if (= pc [column row]) "active " "") "square")}
                                value]))))))]))
 
+(defn run-step []
+  (swap! app-state assoc :b (befunge/doInst (:b @app-state))))
+
 (defn info []
   (let [b (:b @app-state)
         pc (:pc b)
         dir (:dir b)
         stacks (:stack b)]
     [:div
-     [:button {:style {:width "60px" :height "30px"} :on-click #(swap! app-state assoc :b (befunge/doInst b))} "Step"]
+     (if (:running b)
+       [:div
+        (if (:auto-run @app-state)
+          [:button {:style {:width "60px" :height "30px"}
+                    :on-click #(swap! app-state assoc :auto-run false)}
+           "Stop"]
+          [:button {:style {:width "60px" :height "30px"}
+                    :on-click #(swap! app-state assoc :auto-run true)}
+           "Run"])
+        [:button {:style {:width "60px" :height "30px"}
+                  :on-click run-step}
+         "Step"]]
+       [:h3 "State: Finished"])
      [:h3 "Program Counter"]
      [:table
       [:tbody
@@ -64,6 +82,10 @@
    [:p (str (:console @app-state))]])
 
 (defn display []
+  (if (and (-> @app-state :b :running) (:auto-run @app-state))
+    (go
+      (<! (timeout 300))
+      (run-step)))
   [:div
    [:div {:id "header"} [:h1 [:a {:href "https://github.com/palfrey/clostridium"} "Clostridium"]]]
    [:div {:id "navigation"} [info]]
