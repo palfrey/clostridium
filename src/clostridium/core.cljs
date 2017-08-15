@@ -55,7 +55,7 @@
 
 (defn display []
   [:div
-   [:div {:id "header"} [:h1 "Clostridium"]]
+   [:div {:id "header"} [:h1 [:a {:href "https://github.com/palfrey/clostridium"} "Clostridium"]]]
    [:div {:id "navigation"} [info]]
    [:div {:id "content"} [grid]]])
 
