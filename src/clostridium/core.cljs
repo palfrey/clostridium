@@ -5,10 +5,9 @@
             [goog.string :as gstring]
             [goog.string.format]
             [clojure.contrib.humanize :as human]
-            [cljs.core.async :refer [<! timeout]]))
-
-(defonce app-state (r/atom {:console ""
-                            :auto-run false}))
+            [cljs.core.async :refer [<! timeout]]
+            [clostridium.common :refer [app-state]]
+            [clostridium.upload :refer [upload-btn]]))
 
 (defn grid []
   (let [b (-> @app-state :b)
@@ -51,6 +50,8 @@
                   :on-click run-step}
          "Step"]]
        [:h3 "State: Finished"])
+     [:h3 "Program"]
+     [upload-btn (:file-name @app-state)]
      [:h3 "Program Counter"]
      [:table
       [:tbody
