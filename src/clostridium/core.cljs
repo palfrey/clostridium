@@ -27,11 +27,14 @@
                                value]))))))]))
 
 (defn info []
-  (let [b (:b @app-state)]
+  (let [b (:b @app-state)
+        pc (:pc b)]
     [:div
      [:button {:style {:width "60px" :height "30px"} :on-click #(swap! app-state assoc :b (befunge/doInst b))} "Step"]
-     [:h3 "PC"]
-     [:p (str (:pc b))]
+     [:h3 "Program Counter"]
+     [:table
+      [:tr [:td "Column"] [:td (first pc)]]
+      [:tr [:td "Row"] [:td (second pc)]]]
      [:h3 "Stack"]
      [:ul
       (for [[i stack] (map-indexed vector (:stack b))]

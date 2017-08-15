@@ -46,8 +46,9 @@ body {
     display: block;
     top: 113px;
     left: 0px;
-    width: 142px;
+    width: 160px;
     height: 100%;
     position: fixed;
     border: 1px solid #888;
+    padding: 2px;
 }
