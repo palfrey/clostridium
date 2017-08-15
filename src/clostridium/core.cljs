@@ -28,7 +28,8 @@
 
 (defn info []
   (let [b (:b @app-state)
-        pc (:pc b)]
+        pc (:pc b)
+        dir (:dir b)]
     [:div
      [:button {:style {:width "60px" :height "30px"} :on-click #(swap! app-state assoc :b (befunge/doInst b))} "Step"]
      [:h3 "Program Counter"]
@@ -46,8 +47,10 @@
                 ^{:key (gstring/format "stack-%d-%d" i j)}
                 [:li (inc j) " - " (str x)])])])]
      [:h3 "Direction"]
-     [:p (str (:dir b))]
-     [:h3 "String mode"]
+     [:table
+      [:tr [:td "Column"] [:td (first dir)]]
+      [:tr [:td "Row"] [:td (second dir)]]]
+     [:h3 "String Mode"]
      [:p (str (:stringMode b))]]))
 
 (defn display []
