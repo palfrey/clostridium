@@ -34,8 +34,9 @@
      [:button {:style {:width "60px" :height "30px"} :on-click #(swap! app-state assoc :b (befunge/doInst b))} "Step"]
      [:h3 "Program Counter"]
      [:table
-      [:tr [:td "Column"] [:td (first pc)]]
-      [:tr [:td "Row"] [:td (second pc)]]]
+      [:tbody
+       [:tr [:td "Column"] [:td (first pc)]]
+       [:tr [:td "Row"] [:td (second pc)]]]]
      [:h3 "Stack"]
      [:ul
       (for [[i stack] (map-indexed vector (:stack b))]
@@ -48,8 +49,9 @@
                 [:li (inc j) " - " (str x)])])])]
      [:h3 "Direction"]
      [:table
-      [:tr [:td "Column"] [:td (first dir)]]
-      [:tr [:td "Row"] [:td (second dir)]]]
+      [:tbody
+       [:tr [:td "Column"] [:td (first dir)]]
+       [:tr [:td "Row"] [:td (second dir)]]]]
      [:h3 "String Mode"]
      [:p (str (:stringMode b))]]))
 
