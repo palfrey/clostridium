@@ -23,7 +23,9 @@
                         :compiler {:main "clostridium.core"
                                    :asset-path "js/out"
                                    :output-to "resources/public/js/clostridium.js"
-                                   :output-dir "resources/public/js/out"}}
+                                   :output-dir "resources/public/js/out"
+                                   :optimizations :none
+                                   :source-map true}}
                        {:id "test"
                         :source-paths ["src" "test/clj" "test/cljs"]
                         :compiler {:output-to "resources/public/js/testable.js"
