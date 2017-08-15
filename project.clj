@@ -26,7 +26,7 @@
                        {:id "test"
                         :source-paths ["src" "test/clj" "test/cljs"]
                         :compiler {:output-to "resources/public/js/testable.js"
-                                   :output-dir "resources/public/js/out"
+                                   :output-dir "resources/public/js/test"
                                    :main clostridium.all_tests
                                    :optimizations :none
                                    :target :nodejs}}]}
