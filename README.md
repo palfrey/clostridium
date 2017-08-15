@@ -6,6 +6,8 @@ A Befunge-98 interpreter written in Clojure
 
 ## Usage
 
+0. Install [Leiningen](https://leiningen.org/) >=2.5.3
+
 1. `lein run <befunge file>`
 
 or
