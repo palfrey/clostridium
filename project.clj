@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.854"]
                  [reagent "0.7.0"]
-                 [funcool/decimal "1.0.1"]]
+                 [funcool/decimal "1.0.1"]
+                 [clojure-humanize "0.2.2"]]
   :main clostridium.core
   :aliases {"fmt-all" ["do" ["cljfmt" "fix"] ["cljfmt" "fix" "project.clj"]]
             "fmt-and-test" ["do" "fmt-all" "test"]

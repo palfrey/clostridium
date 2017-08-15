@@ -2,7 +2,8 @@
   (:require [reagent.core :as r]
             [clostridium.befunge :as befunge]
             [goog.string :as gstring]
-            [goog.string.format]))
+            [goog.string.format]
+            [clojure.contrib.humanize :as human]))
 
 (defonce app-state (r/atom {}))
 
@@ -32,7 +33,12 @@
      [:h3 "PC"]
      [:p (str (:pc b))]
      [:h3 "Stack"]
-     [:p (str (:stack b))]
+     [:ul
+      (for [[i stack] (map-indexed vector (:stack b))]
+        [:li (human/ordinal (inc i))
+         [:ul
+          (for [[j x] (map-indexed vector stack)]
+            [:li (inc j) " - " (str x)])]])]
      [:h3 "Direction"]
      [:p (str (:dir b))]
      [:h3 "String mode"]
