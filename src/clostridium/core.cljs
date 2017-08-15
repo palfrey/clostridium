@@ -35,10 +35,13 @@
      [:h3 "Stack"]
      [:ul
       (for [[i stack] (map-indexed vector (:stack b))]
+        ^{:key (gstring/format "stack-%d" i)}
         [:li (human/ordinal (inc i))
-         [:ul
-          (for [[j x] (map-indexed vector stack)]
-            [:li (inc j) " - " (str x)])]])]
+         (if (empty? stack) " (empty)"
+             [:ul
+              (for [[j x] (map-indexed vector stack)]
+                ^{:key (gstring/format "stack-%d-%d" i j)}
+                [:li (inc j) " - " (str x)])])])]
      [:h3 "Direction"]
      [:p (str (:dir b))]
      [:h3 "String mode"]
