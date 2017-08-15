@@ -29,7 +29,8 @@
 (defn info []
   (let [b (:b @app-state)
         pc (:pc b)
-        dir (:dir b)]
+        dir (:dir b)
+        stacks (:stack b)]
     [:div
      [:button {:style {:width "60px" :height "30px"} :on-click #(swap! app-state assoc :b (befunge/doInst b))} "Step"]
      [:h3 "Program Counter"]
@@ -38,15 +39,17 @@
        [:tr [:td "Column"] [:td (first pc)]]
        [:tr [:td "Row"] [:td (second pc)]]]]
      [:h3 "Stack"]
-     [:ul
-      (for [[i stack] (map-indexed vector (:stack b))]
-        ^{:key (gstring/format "stack-%d" i)}
-        [:li (human/ordinal (inc i))
-         (if (empty? stack) " (empty)"
-             [:ul
-              (for [[j x] (map-indexed vector stack)]
-                ^{:key (gstring/format "stack-%d-%d" i j)}
-                [:li (inc j) " - " (str x)])])])]
+     (if (and (= (count stacks) 1) (empty? (first stacks)))
+       " (empty)"
+       [:ul
+        (for [[i stack] (map-indexed vector stacks)]
+          ^{:key (gstring/format "stack-%d" i)}
+          [:li (human/ordinal (inc i))
+           (if (empty? stack) " (empty)"
+               [:ul
+                (for [[j x] (map-indexed vector stack)]
+                  ^{:key (gstring/format "stack-%d-%d" i j)}
+                  [:li (inc j) " - " (str x)])])])])
      [:h3 "Direction"]
      [:table
       [:tbody
