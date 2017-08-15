@@ -5,7 +5,7 @@
             [goog.string.format]
             [clojure.contrib.humanize :as human]))
 
-(defonce app-state (r/atom {}))
+(defonce app-state (r/atom {:console ""}))
 
 (defn grid []
   (let [b (-> @app-state :b)
@@ -53,11 +53,17 @@
      [:h3 "String Mode"]
      [:p (str (:stringMode b))]]))
 
+(defn console []
+  [:div
+   [:h3 "Console"]
+   [:p (str (:console @app-state))]])
+
 (defn display []
   [:div
    [:div {:id "header"} [:h1 [:a {:href "https://github.com/palfrey/clostridium"} "Clostridium"]]]
    [:div {:id "navigation"} [info]]
-   [:div {:id "content"} [grid]]])
+   [:div {:id "content"} [grid]]
+   [:div {:id "console"} [console]]])
 
 (defn dev-setup []
   (when ^boolean js/goog.DEBUG
@@ -67,7 +73,10 @@
   (r/render [display]
             (.getElementById js/document "app")))
 
+(defn print-js [msg]
+  (swap! app-state update :console #(str % msg)))
+
 (defn ^:export main []
   (dev-setup)
-  (swap! app-state assoc :b (befunge/makeInitial "64+\"!dlroW ,olleH\">:#,_@"))
+  (swap! app-state assoc :b (befunge/makeInitial "64+\"!dlroW ,olleH\">:#,_@" print-js))
   (reload))

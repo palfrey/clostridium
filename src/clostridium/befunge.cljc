@@ -264,14 +264,12 @@
     \. (fn [b]
          (let [{:keys [b item]} (removeFromStack b)]
            (do
-             (print (str item " "))
-             (flush)
+             ((:printfn b) (str item " "))
              b)))
     \, (fn [b]
          (let [{:keys [b item]} (removeFromStack b)]
            (do
-             (print (str (char item)))
-             (flush)
+             ((:printfn b) (str (char item)))
              b)))
     \# (fn [b] (updatePC b true))
     \@ (fn [b] (assoc b :running false))
@@ -478,7 +476,7 @@
         lines (split fixedData #"(?:(?:\r\n)|\n|\r)")]
     (zipmap (range (count lines)) (map #(zipmap (range (count %1)) (vec %1)) lines))))
 
-(defn makeInitial [data]
+(defn makeInitial [data print-fn]
   {:grid (buildGridfromString data)
    :inst initialInstructions
    :pc [0,0]
@@ -486,7 +484,8 @@
    :stack [[]]
    :running true
    :stringMode false
-   :storageOffset [0,0]})
+   :storageOffset [0,0]
+   :printfn print-fn})
 
 (defn doInst [b]
   (let [inst (char (current b))]
@@ -498,8 +497,12 @@
       ;(prn (:pc ret) (:dir ret) (current ret) (:stack ret))
       ret)))
 
+(defn print-fn [msg]
+  (print msg)
+  (flush))
+
 (defn runBefunge [data]
-  (loop [b (makeInitial data)]
+  (loop [b (makeInitial data print-fn)]
     (if (:running b)
       (recur (doAndPrint b)))))
 
