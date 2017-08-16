@@ -28,7 +28,9 @@
                                     :let [id (str row "-" column "-")]]
                                 ^{:key (str id "sq")}
                                 [:div {:class (str (if (= pc [column row]) "active " "") "square")}
-                                 value]))))))]))
+                                 (if (= value " ")
+                                   (gstring/unescapeEntities "&nbsp;")
+                                   value)]))))))]))
 
 (defn run-step []
   (swap! app-state assoc :b (befunge/doInst (:b @app-state))))
