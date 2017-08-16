@@ -16,7 +16,7 @@
     [:div
      (concat
       [^{:key "gap"} [:div {:class "square"} (gstring/unescapeEntities "&nbsp;")]]
-      (doall (for [column (keys (get data 0))]
+      (doall (for [column (-> (sort-by #(count (keys %)) (vals data)) reverse first keys sort)]
                ^{:key (gstring/format "col-%d" column)} [:div {:class "square column"} column]))
       (doall (for [row (keys data)]
                (concat [^{:key (gstring/format "split-%d" row)}
