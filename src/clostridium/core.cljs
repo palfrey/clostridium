@@ -18,15 +18,17 @@
       [^{:key "gap"} [:div {:class "square"} (gstring/unescapeEntities "&nbsp;")]]
       (doall (for [column (keys (get data 0))]
                ^{:key (gstring/format "col-%d" column)} [:div {:class "square column"} column]))
-      [^{:key "split"} [:br {:style {:clear "both"}}]]
       (doall (for [row (keys data)]
-               (cons ^{:key (gstring/format "row-%d" row)} [:div {:class "square row"} row]
-                     (doall (for [column (keys (get data row))
-                                  value (get (get data row) column)
-                                  :let [id (str row "-" column "-")]]
-                              ^{:key (str id "sq")}
-                              [:div {:class (str (if (= pc [column row]) "active " "") "square")}
-                               value]))))))]))
+               (concat [^{:key (gstring/format "split-%d" row)}
+                        [:br {:style {:clear "both"}}]
+                        ^{:key (gstring/format "row-%d" row)}
+                        [:div {:class "square row"} row]]
+                       (doall (for [column (keys (get data row))
+                                    value (get (get data row) column)
+                                    :let [id (str row "-" column "-")]]
+                                ^{:key (str id "sq")}
+                                [:div {:class (str (if (= pc [column row]) "active " "") "square")}
+                                 value]))))))]))
 
 (defn run-step []
   (swap! app-state assoc :b (befunge/doInst (:b @app-state))))
