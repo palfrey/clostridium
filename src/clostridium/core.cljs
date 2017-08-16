@@ -6,7 +6,7 @@
             [goog.string.format]
             [clojure.contrib.humanize :as human]
             [cljs.core.async :refer [<! timeout]]
-            [clostridium.common :refer [app-state]]
+            [clostridium.common :refer [app-state print-js]]
             [clostridium.upload :refer [upload-btn]]))
 
 (defn grid []
@@ -100,9 +100,6 @@
 (defn reload []
   (r/render [display]
             (.getElementById js/document "app")))
-
-(defn print-js [msg]
-  (swap! app-state update :console #(str % msg)))
 
 (defn ^:export main []
   (dev-setup)

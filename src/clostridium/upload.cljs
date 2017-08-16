@@ -3,7 +3,8 @@
 (ns clostridium.upload
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [cljs.core.async :refer [chan put!]]
-            [clostridium.common :refer [app-state]]))
+            [clostridium.befunge :as befunge]
+            [clostridium.common :refer [app-state print-js]]))
 
 (def first-file
   (map (fn [e]
@@ -13,7 +14,7 @@
            file))))
 
 (def extract-result
-  (map #(-> % .-target .-result js/console.log)))
+  (map #(-> % .-target .-result)))
 
 (def upload-reqs (chan 1 first-file))
 (def file-reads (chan 1 extract-result))
@@ -41,4 +42,8 @@
 
 (go-loop []
   (swap! app-state assoc :data (<! file-reads))
+  (swap! app-state assoc
+         :b (befunge/makeInitial (:data @app-state) print-js)
+         :console ""
+         :auto-run false)
   (recur))
