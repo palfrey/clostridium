@@ -9,10 +9,17 @@
             [clostridium.common :refer [app-state print-js]]
             [clostridium.upload :refer [upload-btn]]))
 
+(defn on-window-resize [evt]
+  (swap! app-state assoc :inner-width (.-innerWidth js/window))
+  (prn "width" (:inner-width @app-state)))
+
 (defn grid []
   (let [b (-> @app-state :b)
         data (:grid b)
-        pc (:pc b)]
+        pc (:pc b)
+        maxwidth (- (:inner-width @app-state) 150 20)
+        maxcolumns (dec (js/Math.floor (/ maxwidth 39)))]
+    (prn "columns" maxcolumns)
     [:div
      (concat
       [^{:key "gap"} [:div {:class "square"} (gstring/unescapeEntities "&nbsp;")]]
@@ -103,7 +110,9 @@
 
 (defn reload []
   (r/render [display]
-            (.getElementById js/document "app")))
+            (.getElementById js/document "app"))
+  (.addEventListener js/window "resize" on-window-resize)
+  (on-window-resize nil))
 
 (defn ^:export main []
   (dev-setup)
