@@ -83,6 +83,13 @@
       [:tbody
        [:tr [:td "Column"] [:td (first pc)]]
        [:tr [:td "Row"] [:td (second pc)]]]]
+     [:h3 "Direction"]
+     [:table
+      [:tbody
+       [:tr [:td "Column"] [:td (first dir)]]
+       [:tr [:td "Row"] [:td (second dir)]]]]
+     [:h3 "String Mode"]
+     [:p (str (:stringMode b))]
      [:h3 "Stack"]
      (if (and (= (count stacks) 1) (empty? (first stacks)))
        " (empty)"
@@ -94,14 +101,7 @@
                [:ul
                 (for [[j x] (map-indexed vector stack)]
                   ^{:key (gstring/format "stack-%d-%d" i j)}
-                  [:li (inc j) " - " (str x)])])])])
-     [:h3 "Direction"]
-     [:table
-      [:tbody
-       [:tr [:td "Column"] [:td (first dir)]]
-       [:tr [:td "Row"] [:td (second dir)]]]]
-     [:h3 "String Mode"]
-     [:p (str (:stringMode b))]]))
+                  [:li (inc j) " - " (str x)])])])])]))
 
 (defn console []
   [:div
