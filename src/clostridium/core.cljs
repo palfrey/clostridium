@@ -16,22 +16,26 @@
   (let [b (-> @app-state :b)
         data (:grid b)
         pc (:pc b)
-        maxwidth (:content-width @app-state)
-        maxcolumns (js/Math.floor (/ maxwidth 39))]
-    (prn "columns" maxcolumns)
+        maxwidth (- (:content-width @app-state) 20)
+        maxcolumns (js/Math.floor (/ maxwidth 39))
+        firstcolumn (:firstcolumn @app-state)
+        lastcolumn (+ firstcolumn maxcolumns -1)
+        validcolumn (fn [column] (and (>= column firstcolumn) (< column lastcolumn)))]
     [:div
      (concat
       [^{:key "gap"} [:div {:class "square"} (gstring/unescapeEntities "&nbsp;")]]
-      (doall (for [column (-> (sort-by #(count (keys %)) (vals data)) reverse first keys sort)]
+      (doall (for [column (-> (sort-by #(count (keys %)) (vals data)) reverse first keys sort)
+                   :when (validcolumn column)]
                ^{:key (gstring/format "col-%d" column)} [:div {:class "square column"} column]))
-      (doall (for [row (keys data)]
+      (doall (for [row (-> data keys sort)]
                (concat [^{:key (gstring/format "split-%d" row)}
                         [:br {:style {:clear "both"}}]
                         ^{:key (gstring/format "row-%d" row)}
                         [:div {:class "square row"} row]]
-                       (doall (for [column (keys (get data row))
+                       (doall (for [column (sort (keys (get data row)))
                                     value (get (get data row) column)
-                                    :let [id (str row "-" column "-")]]
+                                    :let [id (str row "-" column "-")]
+                                    :when (validcolumn column)]
                                 ^{:key (str id "sq")}
                                 [:div {:class (str (if (= pc [column row]) "active " "") "square")}
                                  (if (= value " ")
