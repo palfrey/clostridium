@@ -10,15 +10,14 @@
             [clostridium.upload :refer [upload-btn]]))
 
 (defn on-window-resize [evt]
-  (swap! app-state assoc :inner-width (.-innerWidth js/window))
-  (prn "width" (:inner-width @app-state)))
+  (swap! app-state assoc :content-width (-> "content" js/document.getElementById js/window.getComputedStyle .-width js/parseInt)))
 
 (defn grid []
   (let [b (-> @app-state :b)
         data (:grid b)
         pc (:pc b)
-        maxwidth (- (:inner-width @app-state) 150 20)
-        maxcolumns (dec (js/Math.floor (/ maxwidth 39)))]
+        maxwidth (:content-width @app-state)
+        maxcolumns (js/Math.floor (/ maxwidth 39))]
     (prn "columns" maxcolumns)
     [:div
      (concat
