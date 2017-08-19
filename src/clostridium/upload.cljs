@@ -45,5 +45,6 @@
   (swap! app-state assoc
          :b (befunge/makeInitial (:data @app-state) print-js)
          :console ""
-         :auto-run false)
+         :auto-run false
+         :firstcolumn 0)
   (recur))
