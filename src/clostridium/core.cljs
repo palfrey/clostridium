@@ -10,14 +10,17 @@
             [clostridium.upload :refer [upload-btn]]))
 
 (defn on-window-resize [evt]
-  (swap! app-state assoc :content-width (-> "content" js/document.getElementById js/window.getComputedStyle .-width js/parseInt)))
+  (let [maxwidth (- (-> "content" js/document.getElementById js/window.getComputedStyle .-width js/parseInt) 20)
+        maxcolumns (js/Math.floor (/ maxwidth 39))
+        firstcolumn (:firstcolumn @app-state)
+        lastcolumn (+ firstcolumn maxcolumns -1)]
+    (swap! app-state assoc :max-columns maxcolumns)))
 
 (defn grid []
   (let [b (-> @app-state :b)
         data (:grid b)
         pc (:pc b)
-        maxwidth (- (:content-width @app-state) 20)
-        maxcolumns (js/Math.floor (/ maxwidth 39))
+        maxcolumns (:max-columns @app-state)
         firstcolumn (:firstcolumn @app-state)
         lastcolumn (+ firstcolumn maxcolumns -1)
         validcolumn (fn [column] (and (>= column firstcolumn) (< column lastcolumn)))]
@@ -43,7 +46,16 @@
                                    value)]))))))]))
 
 (defn run-step []
-  (swap! app-state assoc :b (befunge/doInst (:b @app-state))))
+  (swap! app-state assoc :b (befunge/doInst (:b @app-state)))
+  (let [boundary 5
+        column (-> @app-state :b :pc first)
+        maxcolumns (:max-columns @app-state)
+        firstcolumn (:firstcolumn @app-state)
+        lastcolumn (+ maxcolumns firstcolumn)]
+    (if (> (+ column boundary) lastcolumn)
+      (swap! app-state assoc :firstcolumn (- (+ column boundary) maxcolumns)))
+    (if (< (- column boundary) firstcolumn)
+      (swap! app-state assoc :firstcolumn (max 0 (- column boundary))))))
 
 (defn info []
   (let [b (:b @app-state)
