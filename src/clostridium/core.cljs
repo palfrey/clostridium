@@ -76,7 +76,7 @@
       (swap! app-state assoc :firstcolumn (max 0 (- column boundary))))))
 
 (defn load-example []
-  (swap! app-state assoc :b (befunge/makeInitial (get examples (:example @app-state)) print-js)))
+  (load-program (get examples (:example @app-state))))
 
 (defn info []
   (let [b (:b @app-state)

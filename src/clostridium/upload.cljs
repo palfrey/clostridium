@@ -40,11 +40,14 @@
     (.readAsText reader file)
     (recur)))
 
-(go-loop []
-  (swap! app-state assoc :data (<! file-reads))
+(defn load-program [data]
   (swap! app-state assoc
-         :b (befunge/makeInitial (:data @app-state) print-js)
+         :b (befunge/makeInitial data print-js)
          :console ""
          :auto-run false
-         :firstcolumn 0)
+         :firstcolumn 0))
+
+(go-loop []
+  (swap! app-state assoc :data (<! file-reads))
+  (load-program (:data @app-state))
   (recur))
