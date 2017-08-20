@@ -21,7 +21,7 @@
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/"]
                         :figwheel {:on-jsload "clostridium.core/reload"}
-                        :compiler {:main "clostridium.core"
+                        :compiler {:main clostridium.core
                                    :asset-path "js/out"
                                    :output-to "resources/public/js/clostridium.js"
                                    :output-dir "resources/public/js/out"
@@ -34,7 +34,14 @@
                                    :output-dir "resources/public/js/test"
                                    :main clostridium.all_tests
                                    :optimizations :none
-                                   :target :nodejs}}]}
+                                   :target :nodejs}}
+                       {:id "prod"
+                        :source-paths ["src"]
+                        :compiler {:output-to "resources/public/js/clostridium.js"
+                                   :output-dir "resources/public/js/prod"
+                                   :main clostridium.core
+                                   :optimizations :advanced
+                                   :pretty-print false}}]}
   :plugins [[lein-auto "0.1.3"]
             [lein-cljfmt "0.5.7"]
             [lein-figwheel "0.5.12"]
