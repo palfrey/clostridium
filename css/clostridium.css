@@ -1,0 +1,63 @@
+.square {
+    float: left;
+    width: 39px;
+    text-align: center;
+}
+
+.column {
+    background-color: lightgreen;
+}
+
+.row {
+    background-color: lightcoral;
+}
+
+.active {
+    background-color: lightblue;
+}
+
+body {
+    margin: 0;
+    padding: 0 10px 0 10px;
+    height: 100%;
+}
+
+#content {
+    margin: 165px 0px 0px 150px;
+    display: block;
+    padding: 10px;
+}
+
+#header {
+    display: block;
+    top: 0px;
+    left: 165px;
+    width: 100%;
+    height: 65px;
+    position: fixed;
+    background-color: #ffffff;
+    border: 1px solid #888;
+    padding-left: 6px;
+}
+
+#navigation {
+    display: block;
+    top: 0px;
+    left: 0px;
+    width: 160px;
+    position: absolute;
+    border: 1px solid #888;
+    padding: 2px;
+}
+
+#console {
+    display: block;
+    top: 66px;
+    left: 165px;
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    background-color: #ffffff;
+    border: 1px solid #888;
+    padding-left: 4px;
+}
