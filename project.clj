@@ -9,7 +9,7 @@
                  [funcool/decimal "1.0.1"]
                  [clojure-humanize "0.2.2"]
                  [org.clojure/core.async "0.3.443"]]
-  :main clostridium.core
+  :main clostridium.befunge
   :aliases {"fmt-all" ["do" ["cljfmt" "fix"] ["cljfmt" "fix" "project.clj"]]
             "fmt-and-test" ["do" "fmt-all" "test"]
             "check-fmt" ["do" ["cljfmt" "check"] ["cljfmt" "check" "project.clj"]]
