@@ -9,6 +9,10 @@
             [clostridium.common :refer [app-state print-js]]
             [clostridium.upload :refer [upload-btn]]))
 
+(def examples
+  {"Hello World!" "64+\"!dlroW ,olleH\">:#,_@"
+   "Something else" ""})
+
 (defn on-window-resize [evt]
   (let [maxwidth (- (-> "content" js/document.getElementById js/window.getComputedStyle .-width js/parseInt) 20)
         maxcolumns (js/Math.floor (/ maxwidth 39))
@@ -57,6 +61,9 @@
     (if (< (- column boundary) firstcolumn)
       (swap! app-state assoc :firstcolumn (max 0 (- column boundary))))))
 
+(defn load-example []
+  (swap! app-state assoc :b (befunge/makeInitial (get examples (:example @app-state)) print-js)))
+
 (defn info []
   (let [b (:b @app-state)
         pc (:pc b)
@@ -77,6 +84,13 @@
          "Step"]]
        [:h3 "State: Finished"])
      [:h3 "Program"]
+     [:p "Choose example"
+      [:select {:value (:example @app-state)
+                :on-change #(swap! app-state assoc :example (-> % .-target .-value))}
+       (doall (for [key (keys examples)]
+                ^{:key key} [:option {:value key} key]))]
+      [:button {:style {:font-size "small"} :on-click load-example}
+       "Load example"]]
      [upload-btn (:file-name @app-state)]
      [:h3 "Program Counter"]
      [:table
@@ -131,5 +145,5 @@
 
 (defn ^:export main []
   (dev-setup)
-  (swap! app-state assoc :b (befunge/makeInitial "64+\"!dlroW ,olleH\">:#,_@" print-js))
+  (load-example)
   (reload))
