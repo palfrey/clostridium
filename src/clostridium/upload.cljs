@@ -23,12 +23,12 @@
   (put! upload-reqs e))
 
 (defn upload-btn [file-name]
-  [:span.upload-label
+  [:p "Load file"
    [:label
     [:input.hidden-xs-up
      {:type "file" :on-change put-upload}]
     [:i.fa.fa-upload.fa-lg]
-    (or file-name "Upload new program")]
+    (or file-name "")]
    (when file-name
      [:i.fa.fa-times {:on-click #(swap! app-state dissoc :data)}])])
 
