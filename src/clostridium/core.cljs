@@ -98,6 +98,11 @@
          "Step"]]
        [:h3 "State: Finished"])
      [:h3 "Program"]
+     [:p "Time per step"
+      [:select {:value (:ms-per-step @app-state)
+                :on-change #(swap! app-state assoc :ms-per-step (-> % .-target .-value))}
+       (doall (for [value [10 50 100 300 1000]]
+                ^{:key value} [:option {:value value} (gstring/format "%d ms" value)]))]]
      [:p "Choose example"
       [:select {:value (:example @app-state)
                 :on-change #(swap! app-state assoc :example (-> % .-target .-value))}
@@ -139,7 +144,7 @@
 (defn display []
   (if (and (-> @app-state :b :running) (:auto-run @app-state))
     (go
-      (<! (timeout 300))
+      (<! (timeout (:ms-per-step @app-state)))
       (run-step)))
   [:div
    [:div {:id "header"} [:h1 [:a {:href "https://github.com/palfrey/clostridium"} "Clostridium"]]]
