@@ -7,11 +7,25 @@
             [clojure.contrib.humanize :as human]
             [cljs.core.async :refer [<! timeout]]
             [clostridium.common :refer [app-state print-js]]
-            [clostridium.upload :refer [upload-btn]]))
+            [clostridium.upload :refer [upload-btn load-program]]
+            [clojure.string :as string]))
 
 (def examples
   {"Hello World!" "64+\"!dlroW ,olleH\">:#,_@"
-   "Something else" ""})
+   "Quine" "01->1# +# :# 0# g# ,# :# 5# 8# *# 4# +# -# _@"
+   "99 bottles of beer" (string/join "\n" ["\"d\"4vv\"take one down, pass it around\"<>"
+                                           ":-2*< v \"e wall\"_v#\\0`1%4./4::_0#%>#4^#"
+                                           "\\4>/|>:#,_$:55+:,\\4%3-!*0\\>:>#,_$$:1+\\1"
+                                           ">>>#@^>$\"ht no \"\\>\\\"reeb fo selttob\">>>"])
+   "Y-test" (string/join "\n"
+                         ["y0\" :sgalF\">:#,_$.a, 0\" :llec rep setyB\">:#,_$.a, 0\" :reterpretnI\">:#,_$.\"V \",,v"
+                          ".a,0\" :mgidaraP gnitarepO\">:#,_$.a,0\" :rotarepes htaP\">:#,_$,a,0\" :snoisnemiD\"v>"
+                          ">:#,_$.a,\" :PI\",,,,..'@,\\..\" atled\",,,,,,\\..\" sfo\",,,,\\..a,0\" :xam ,niM\">:#,_v>"
+                          "$\\..\" -\",,\\..a,0\" :emiT\">:#,_$..a, 0\" :skcatS\">:#,_$.a,.a, 0\" :sgrA\">:#,_$  v>"
+                          ">:#v_$ :#v_$ 0\" :vnE\">:#,_$ >:#v_a,@                                        >"
+                          "v,#    <                     ,"
+                          ">>:#,_v                      >:#,_v"
+                          "^,a    $<                   ^,a     <"])})
 
 (defn on-window-resize [evt]
   (let [maxwidth (- (-> "content" js/document.getElementById js/window.getComputedStyle .-width js/parseInt) 20)
