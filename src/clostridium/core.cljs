@@ -139,7 +139,7 @@
 (defn console []
   [:div
    [:h3 "Console"]
-   [:p (str (:console @app-state))]])
+   [:pre (str (:console @app-state))]])
 
 (defn display []
   (if (and (-> @app-state :b :running) (:auto-run @app-state))
