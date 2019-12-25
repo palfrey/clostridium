@@ -1,8 +1,8 @@
 # Clostridium
 
-[![Build Status](https://travis-ci.org/palfrey/clostridium.svg?branch=master)](https://travis-ci.org/palfrey/clostridium)
+[![Build Status](https://travis-ci.com/palfrey/clostridium.svg?branch=master)](https://travis-ci.com/palfrey/clostridium)
 
-A Befunge-98 interpreter written in Clojure
+A [Befunge-98](https://esolangs.org/wiki/Funge-98) interpreter written in Clojure
 
 ## Usage
 
